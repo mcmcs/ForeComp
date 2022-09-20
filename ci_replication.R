@@ -23,19 +23,7 @@ inflation <- Load_Data("PGDP") %>% glimpse()
 unemp <- Load_Data("UNEMP") %>% glimpse()
 tbill <- Load_Data("TBILL") %>% glimpse()
 
-Replicate_Table <- function(df, starting_year_quarter, ending_year_quarter, horizon) {
-
-  # CHANGE Beginning
-  # df <- gdp
-  # starting_year_quarter <- "1987-01-01"
-  # ending_year_quarter <- "2016-10-01"
-  # horizon <- 1
-  # bandwidth <- 3
-  # type <- "Replication"
-  #
-  # rm(df, starting_year_quarter, ending_year_quarter, horizon, bandwidth, type)
-
-  # CHANGE End
+Replicate_Table <- function(df, starting_year_quarter, ending_year_quarter, horizon, bandwidth = 3) {
 
   start <- as.Date(starting_year_quarter)
   end <- as.Date(ending_year_quarter)
@@ -103,15 +91,15 @@ Add_Asterisks <- function(df) {
       "WPE-D" = case_when(`WPE-D_05` == TRUE ~ paste0(`WPE-D`, "**"),
                           `WPE-D_10` == TRUE ~ paste0(`WPE-D`, "*"),
                           TRUE ~ as.character(`WPE-D`)),
-      "DM-BT" = case_when(`WCD-DM_05` == TRUE ~ paste0(`DM`, "**"),
-                          `WCD-DM_10` == TRUE ~ paste0(`DM`, "*"),
-                          TRUE ~ as.character(`DM`)),
+      "WCD-DM" = case_when(`WCD-DM_05` == TRUE ~ paste0(`WCD-DM`, "**"),
+                          `WCD-DM_10` == TRUE ~ paste0(`WCD-DM`, "*"),
+                          TRUE ~ as.character(`WCD-DM`)),
     ) %>%
   select("Forecast Horizon",
-         # "WCD-DM",
+         "WCD-DM",
          "WCE-B, M = $T^{1/2}$" = "WCE-B",
-         "WPE-D, m = $T^{1/3}$" = "WPE-D",
-         "DM-BT") %>%
+         "WPE-D, m = $T^{1/3}$" = "WPE-D"
+         ) %>%
   t()
 
 }
