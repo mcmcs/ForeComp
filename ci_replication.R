@@ -23,15 +23,17 @@ inflation <- Load_Data("PGDP") %>% glimpse()
 unemp <- Load_Data("UNEMP") %>% glimpse()
 tbill <- Load_Data("TBILL") %>% glimpse()
 
-Replicate_Table <- function(df, starting_year_quarter, ending_year_quarter, horizon, bandwidth = 3, type = "Replication") {
+Replicate_Table <- function(df, starting_year_quarter, ending_year_quarter, horizon) {
 
   # CHANGE Beginning
-  df <- gdp
-  starting_year_quarter <- "1987-01-01"
-  ending_year_quarter <- "2016-10-01"
-  horizon <- 1
-  bandwidth <- 3
-  type <- "Replication"
+  # df <- gdp
+  # starting_year_quarter <- "1987-01-01"
+  # ending_year_quarter <- "2016-10-01"
+  # horizon <- 1
+  # bandwidth <- 3
+  # type <- "Replication"
+  #
+  # rm(df, starting_year_quarter, ending_year_quarter, horizon, bandwidth, type)
 
   # CHANGE End
 
