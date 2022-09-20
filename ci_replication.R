@@ -25,6 +25,16 @@ tbill <- Load_Data("TBILL") %>% glimpse()
 
 Replicate_Table <- function(df, starting_year_quarter, ending_year_quarter, horizon, bandwidth = 3, type = "Replication") {
 
+  # CHANGE Beginning
+  df <- gdp
+  starting_year_quarter <- "1987-01-01"
+  ending_year_quarter <- "2016-10-01"
+  horizon <- 1
+  bandwidth <- 3
+  type <- "Replication"
+
+  # CHANGE End
+
   start <- as.Date(starting_year_quarter)
   end <- as.Date(ending_year_quarter)
 
@@ -52,19 +62,6 @@ Replicate_Table <- function(df, starting_year_quarter, ending_year_quarter, hori
   wce_dm_ten = dm.test.r(d, cl = .10, h=horizon) #dm original (WCE-DM)
   wce_b_ten = dm.test.bt.fb(d, cl = .10, M = floor(sqrt(n))); #fixed-b (WCE-B)
   wpe_d_ten = dm.test.wpe.fb(d, cl=.10, M = floor(n^(1/bandwidth))); # (WPE-D)
-
-  if (type == "Robustness Check") {
-
-  wce_b = dm.test.bt.fb(d, cl = 0.05, M = bandwidth); #fixed-b (WCE-B)
-  wpe_d = dm.test.wpe.fb(d, cl=0.05, M = bandwidth); # (WPE-D)
-  wce_dm = dm.test.bt(d, cl = .05, M = bandwidth)
-
-  wce_b_ten = dm.test.bt.fb(d, cl = .10, M = bandwidth); #fixed-b (WCE-B)
-  wpe_d_ten = dm.test.wpe.fb(d, cl=.10, M = bandwidth); # (WPE-D)
-  wce_dm_ten = dm.test.bt(d, cl = .05, M = bandwidth)
-
-
-  }
 
   df_stats <- tibble("Forecast Horizon" = horizon - 1,
          "WCD-DM" = wce_dm$stat,
@@ -199,6 +196,20 @@ Save_Kable(mat_tbill, "tbill")
 
 # Robustness Checks -------------------------------------------------------
 
+
+if (type == "Robustness Check") {
+
+wce_b = dm.test.bt.fb(d, cl = 0.05, M = bandwidth); #fixed-b (WCE-B)
+wpe_d = dm.test.wpe.fb(d, cl=0.05, M = bandwidth); # (WPE-D)
+wce_dm = dm.test.bt(d, cl = .05, M = bandwidth)
+
+wce_b_ten = dm.test.bt.fb(d, cl = .10, M = bandwidth); #fixed-b (WCE-B)
+wpe_d_ten = dm.test.wpe.fb(d, cl=.10, M = bandwidth); # (WPE-D)
+wce_dm_ten = dm.test.bt(d, cl = .05, M = bandwidth)
+
+
+}
+
 num_obs <- nrow(gdp)
 b <- seq(.1, 1, .1)
 m <- floor(b * num_obs)
@@ -290,6 +301,8 @@ Save_Robustness_Table <- function(list_table_caption_file) {
 
 df_robust_combinations <- expand_grid(dataset = c("gdp", "inflation", "unemp", "tbill"),
                                       dm = c("WPE-D", "WCE-B", "DM-BT"))
+
+Run_Robustness_Check("gdp", "WPE-D")
 
 walk2(df_robust_combinations$dataset, df_robust_combinations$dm, ~ Run_Robustness_Check(.x, .y) %>% Save_Robustness_Table(.))
 
