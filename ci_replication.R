@@ -244,7 +244,10 @@ Check_Sensitity_To_Bandwidth <- function(df, starting_year_quarter, ending_year_
 
 }
 
-num_obs <- nrow(gdp)
+num_obs <- gdp %>%
+  filter(., between(year_quarter, as.Date("1987-01-01"), as.Date("2016-10-01"))) %>%
+  nrow()
+
 b <- seq(.1, 1, .1)
 m <- floor(b * num_obs)
 
