@@ -131,7 +131,7 @@ Save_Kable <- function(df, file_name) {
 
 v_rows_to_keep <- c(1:4, 6:8, 10:12, 14:16, 18:20, 22:24)
 
-# GDP ---------------------------------------------------------------------
+#* GDP ---------------------------------------------------------------------
 
 gdp_1 <- map_dfr(1:5, ~ Replicate_Table(gdp, "1987-01-01", "2016-10-01", .)) %>% Add_Asterisks(.)
 gdp_2 <- map_dfr(1:5, ~ Replicate_Table(gdp, "1987-01-01", "2021-10-01", .)) %>% Add_Asterisks(.)
@@ -144,7 +144,7 @@ mat_gdp <- rbind(gdp_1, gdp_2, gdp_3, gdp_4, gdp_5, gdp_6)[v_rows_to_keep, ]
 
 Save_Kable(mat_gdp, "gdp")
 
-# Inflation ---------------------------------------------------------------------
+#* Inflation ---------------------------------------------------------------------
 
 inf_1 <- map_dfr(1:5, ~ Replicate_Table(inflation, "1987-01-01", "2016-10-01", .)) %>% Add_Asterisks(.)
 inf_2 <- map_dfr(1:5, ~ Replicate_Table(inflation, "1987-01-01", "2021-10-01", .)) %>% Add_Asterisks(.)
@@ -158,7 +158,7 @@ mat_inf <- rbind(inf_1, inf_2, inf_3, inf_4, inf_5, inf_6)[v_rows_to_keep, ]
 Save_Kable(mat_inf, "inf")
 
 
-# Unemployment ------------------------------------------------------------
+#* Unemployment ------------------------------------------------------------
 
 unemp_1 <- map_dfr(1:5, ~ Replicate_Table(unemp, "1987-01-01", "2016-10-01", .)) %>% Add_Asterisks(.)
 unemp_2 <- map_dfr(1:5, ~ Replicate_Table(unemp, "1987-01-01", "2021-10-01", .)) %>% Add_Asterisks(.)
@@ -171,7 +171,7 @@ mat_unemp <- rbind(unemp_1, unemp_2, unemp_3, unemp_4, unemp_5, unemp_6)[v_rows_
 
 Save_Kable(mat_unemp, "unemp")
 
-# TBill -------------------------------------------------------------------
+#* TBill -------------------------------------------------------------------
 
 tbill_1 <- map_dfr(1:5, ~ Replicate_Table(tbill, "1987-01-01", "2016-10-01", .)) %>% Add_Asterisks(.)
 tbill_2 <- map_dfr(1:5, ~ Replicate_Table(tbill, "1987-01-01", "2021-10-01", .)) %>% Add_Asterisks(.)
@@ -330,7 +330,7 @@ Save_Robustness_Table <- function(list_table_caption_file) {
     column_spec(., 1, border_right = TRUE) %>%
     kable_styling(font_size = 6) %>%
     footnote(
-      general = "Asterisks ** and * indicate two-sided significance at, respectively, the 5% and 10% level using fixed-m asymptotics. m is chosen as $m \\in{1,2,3,4,5,floor(b * t)}$ with $t = 219$ and $b \\in{.1, .2, \\dots,.9, 1.0}$",
+      general = "Asterisks ** and * indicate two-sided significance at, respectively, the 5% and 10% level using fixed-m asymptotics. m is chosen as $m \\in{1,2,3,4,5,floor(b * t)}$ with $t = 120$ and $b \\in{.1, .2, \\dots,.9, 1.0}$",
              threeparttable = TRUE) %>%
     save_kable(., paste0("C:/Dropbox/Phil Research Dropbox/Nathan Schor/SchorShin/ForecastComp/note/note02_slides/tables/", file_name))
 }
