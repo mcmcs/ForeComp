@@ -338,8 +338,6 @@ Save_Robustness_Table <- function(list_table_caption_file) {
 df_robust_combinations <- expand_grid(dataset = c("gdp", "inflation", "unemp", "tbill"),
                                       dm = c("WPE-D", "WCE-B", "WCD-DM"))
 
-Run_Robustness_Check("gdp", "WPE-D")
-
 walk2(df_robust_combinations$dataset, df_robust_combinations$dm, ~ Run_Robustness_Check(.x, .y) %>% Save_Robustness_Table(.))
 
 
