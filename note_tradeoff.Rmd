@@ -16,10 +16,13 @@ library(astsa)
 
 ### Global tuning parameter
 ```{r}
-nlen    = 200;   # length of time-series data
-Mchoice = 2;   # bandwidth
+nlen    = 100;   # length of time-series data
+Mchoice = 5;   # bandwidth
 nsim    = 1000; # number of simulation to compute size and power
 cl      = 0.05; # confidence level 
+
+set.seed(1234); # set seed
+
 ```
 
 
@@ -29,10 +32,11 @@ T = 1000 + nlen;
 dt = matrix(NA, T, 1);
 dt0 = 0;
 for (t in 1:T){
-  dt0 = 0.5 + 0.5*dt0 + rnorm(1);
+  dt0 = 0.5 + 0.7*dt0 + rnorm(1);
   dt[t] = dt0;
 }
-dt = dt[1001:T, , drop=F]; # because we are starting from the arbitrary value, we need to discrard initial observationas
+dt = dt[1001:T, , drop=F]; # because we are starting from the arbitrary value ...
+                           # we need to discard initial observationas
 
 mut = mean(dt); # demean
 dt_tilde = dt - mut;
@@ -60,7 +64,7 @@ mat_stat = matrix(NA, nsim, 1);
 mat_dt   = matrix(NA, nlen, nsim); #matrix that stores data (for size calculation)
 for (irep in 1:nsim){
   dt_sim = arima.sim(m_sim, n=nlen, innov = rnorm(nlen, 0, sqrt(a$sigma2)));
-  rst = dm.test.bt(dt_sim, M=NA, cl=cl);
+  rst = dm.test.bt(dt_sim, M=Mchoice, cl=cl);
   mat_rej[irep, ] = rst$rej;
   mat_stat[irep,] = rst$stat;
   mat_dt[, irep] = dt_sim;
