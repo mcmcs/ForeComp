@@ -21,19 +21,15 @@ set.seed(1234)
 T_ <- 1000 + nlen_
 
 dt0_ <- 0
-v_dt <- vector("double", number_obs)
+v_dt <- vector("double", T_)
 
-for (t in 1:number_obs) {
+for (t in 1:T_) {
 
   dt0_ <- .5 + .7 * dt0_ + rnorm(1)
   v_dt[t] <- dt0_
 
 }
 
-  return(v_dt)
-}
-
-v_dt <- Simulate_Data(T_)
 v_dt <- v_dt[1001:T_]
 
 mu_t_ <- mean(v_dt)
@@ -50,14 +46,6 @@ if (length(m_sim$ma)==0){m_sim$ma=0.0}
 
 # Size Computation --------------------------------------------------------
 
-Generate_ARIMA_Simulated <- function(M) {
-
-  v_arima_sim <- arima.sim(m_sim, n = nlen_, innov = rnorm(nlen_, 0, sqrt(a$sigma2)))
-  dm_test <- dm.test.bt(v_arima_sim, M=M, cl=cl_)
-
-  return(dm_test)
-}
-
 l_arima_sim <- map(1:nsim_, ~ arima.sim(m_sim, n = nlen_, innov = rnorm(nlen_, 0, sqrt(a$sigma2))))
 l_dm_test <- map(l_arima_sim, ~ dm.test.bt(., M = 3, cl = cl_))
 v_test_statistic <- map_dbl(l_dm_test, ~ pluck(., "stat"))
@@ -65,18 +53,6 @@ v_reject <- map_dbl(l_dm_test, ~ pluck(., "rej"))
 size_distortion_ <- mean(v_reject) - cl_
 
 paste("Size distortion is", size_distortion_)
-
-# df_sim <- tibble(
-#   arima_sim = l_arima_sim,
-#   test_statistic = map_dbl(arima_sim, ~ pluck(., "stat")),
-#   reject = map_dbl(arima_sim, ~ pluck(., "rej"))
-# ) %>%
-# print()
-#
-# size_distortion_ <- mean(df_sim$reject) - cl_
-
-
-
 
 # Delta setup -------------------------------------------------------------
 
