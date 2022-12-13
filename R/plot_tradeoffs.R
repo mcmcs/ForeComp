@@ -9,7 +9,7 @@ pacman::p_load(
 
 # Global Tuning Parameters ------------------------------------------------
 
-nlen_ <- 100
+nlen_ <- 1000
 nsim_ <- 1000
 cl_ <- .05
 
@@ -30,7 +30,7 @@ v_dt <- vector("double", T_)
 
 for (t in 1:T_) {
 
-  dt0_ <- .5 + .7 * dt0_ + rnorm(1)
+  dt0_ <- .5 + .3 * dt0_ + rnorm(1)
   v_dt[t] <- dt0_
 
 }
@@ -122,7 +122,7 @@ Compute_Size_Distort_Max_Power_Loss <- function(simulated_data, bandwidth) {
 
 }
 
-# 20 seconds per bandwidth
+# 1 minute per bandwidth
 
 tic()
 df_sims <- map_dfr(v_Mchoice, ~ Compute_Size_Distort_Max_Power_Loss(l_arima_sim, .)) %>%
