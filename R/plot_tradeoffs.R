@@ -114,9 +114,67 @@ df_arima_del_grid <- expand_grid(l_arima_sim, del_grid) %>%
   ) %>%
   print()
 
-v_delta_sim <- map_d
+# Power of a standard test ------------------------------------------------
+
+v_standard_stat <- map(l_arima_sim, ~ dm.test.bt(., M = v_Mchoice[1], cl = cl_)) %>%
+  map_dbl(., ~ pluck(., "stat"))
+
+c05_star <- quantile(abs(v_standard_stat), (1 - cl_))
+
+# size corrected power ----------------------------------------------------
+
+df_arima_del_grid <- df_arima_del_grid %>%
+  mutate(
+    standard_dm_test =  map(oracle_size_corrected_stat, ~ dm.test.bt(., M = v_Mchoice[2], cl = cl_)),
+    standard_raw_power = map_lgl(standard_dm_test, ~ pluck(., "rej")),
+    standard_size_corrected_stat = map_dbl(standard_dm_test, ~ pluck(., "stat")),
+    standard_size_corrected_power = abs(standard_size_corrected_stat) > c05_star
+  ) %>%
+  glimpse()
+
+
+# Max Power Loss ----------------------------------------------------------
+
+df_power_loss <- df_arima_del_grid %>%
+  group_by(del_grid) %>%
+  summarize(
+    standard_power = mean(standard_size_corrected_power),
+    oracle_power = mean(oracle_reject_size_corrected_power),
+    power_loss = oracle_power - standard_power
+  ) %>%
+  ungroup() %>%
+  mutate(
+    d_max_power_loss = power_loss == max(power_loss)
+  ) %>%
+  print()
+
+max_power_loss_ <- max(df_power_loss$oracle_power - df_power_loss$standard_power)
 
 
 
+df_power_loss %>%
+  select(del_grid, standard_power, oracle_power) %>%
+  pivot_longer(., -del_grid, names_to = "test_type", values_to = "power") %>%
+  mutate(
+    `Test Type` = str_remove(test_type, "_power"),
+    `Test Type` = str_to_title(`Test Type`)
+  ) %>%
+  ggplot(., aes(x = del_grid, y = power)) +
+  ggthemes::scale_color_ptol() +
+  geom_line(aes(color = `Test Type`), size = 1) +
+  geom_point(aes(color = `Test Type`), size = 1.5) +
+  geom_segment(data = df_power_loss %>% filter(d_max_power_loss),
+               aes(x = del_grid, xend = del_grid, y = standard_power, yend = oracle_power), size = 2) +
+  theme_minimal() +
+  labs(
+    x = "Delta Grid",
+    y = "Power"
+  ) +
+  theme(
+    panel.grid.minor = element_blank(),
+    axis.text = element_text(size = 12)
+  )
+
+paste("size distortion =", size_distortion_)
 
 
