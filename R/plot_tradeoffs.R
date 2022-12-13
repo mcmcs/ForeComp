@@ -2,7 +2,8 @@
 pacman::p_load(
   tidyverse,
   forecast,
-  astsa
+  astsa,
+  ForeComp
 )
 
 # Global Tuning Parameters ------------------------------------------------
@@ -48,7 +49,6 @@ i_ma = grep("ma", names(a$coef));
 m_sim = list("ar"=a$coef[i_ar], "ma"=a$coef[i_ma]);
 if (length(m_sim$ar)==0){m_sim$ar=0.0}
 if (length(m_sim$ma)==0){m_sim$ma=0.0}
-
 
 # Size Computation --------------------------------------------------------
 
@@ -101,6 +101,18 @@ c05_star_oracle <- quantile(abs(v_oracle_test_statistic), 1 - cl_)
 
 
 # size corrected power ----------------------------------------------------
+
+v_oracle_test_statistic_size_corrected <- map(l_arima_sim, ~ . + (1/sqrt(nlen_)) *sqrt(Om)*del_grid)
+
+df_arima_del_grid <- expand_grid(l_arima_sim, del_grid) %>%
+  mutate(
+    oracle_size_corrected_stat = map2(l_arima_sim, del_grid, ~ .x + (1/sqrt(nlen_)) *sqrt(Om)* .y),
+    oracle_dm_stat = map_dbl(oracle_size_corrected_stat, ~ mean(.) / (sqrt(Om / nlen_))),
+    oracle_pval = 2*stats::pnorm(-abs(oracle_dm_stat), mean=0, sd=1),
+    oracle_reject_raw_power = oracle_pval < cl_,
+    oracle_reject_size_corrected_power = abs(oracle_dm_stat) > c05_star_oracle
+  ) %>%
+  print()
 
 v_delta_sim <- map_d
 
