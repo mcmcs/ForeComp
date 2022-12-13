@@ -3,15 +3,20 @@ pacman::p_load(
   tidyverse,
   forecast,
   astsa,
-  ForeComp
+  ForeComp,
+  tictoc
 )
 
 # Global Tuning Parameters ------------------------------------------------
 
 nlen_ <- 100
-v_Mchoice <- 1:10
 nsim_ <- 1000
 cl_ <- .05
+
+b <- seq(.1, 1, .1)
+m <- floor(b * nlen_)
+
+v_Mchoice <- c(1:9, m)
 
 set.seed(1234)
 
@@ -44,15 +49,8 @@ m_sim = list("ar"=a$coef[i_ar], "ma"=a$coef[i_ma]);
 if (length(m_sim$ar)==0){m_sim$ar=0.0}
 if (length(m_sim$ma)==0){m_sim$ma=0.0}
 
-# Size Computation --------------------------------------------------------
-
-l_arima_sim <- map(1:nsim_, ~ arima.sim(m_sim, n = nlen_, innov = rnorm(nlen_, 0, sqrt(a$sigma2))))
-l_dm_test <- map(l_arima_sim, ~ dm.test.bt(., M = 3, cl = cl_))
-v_test_statistic <- map_dbl(l_dm_test, ~ pluck(., "stat"))
-v_reject <- map_dbl(l_dm_test, ~ pluck(., "rej"))
-size_distortion_ <- mean(v_reject) - cl_
-
-paste("Size distortion is", size_distortion_)
+ss = arma.spec(ar = m_sim$ar, ma = m_sim$ma, var.noise = a$sigma2, n.freq = 100);
+Om = ss$spec[1]; #this is 2*pi*f(0), spectrum at zero rather than a spectral density at zero
 
 # Delta setup -------------------------------------------------------------
 
@@ -60,23 +58,17 @@ ndel <-  50 #number of deltas
 del_tilde <-  10 #largest delta
 del_grid <-  seq(from=-del_tilde, to=del_tilde, length.out=ndel)
 
-ss = arma.spec(ar = m_sim$ar, ma = m_sim$ma, var.noise = a$sigma2, n.freq = 100);
-Om = ss$spec[1]; #this is 2*pi*f(0), spectrum at zero rather than a spectral density at zero
+# Size Computation --------------------------------------------------------
+
+l_arima_sim <- map(1:nsim_, ~ arima.sim(m_sim, n = nlen_, innov = rnorm(nlen_, 0, sqrt(a$sigma2))))
 
 v_oracle_test_statistic <- map_dbl(l_arima_sim, ~ mean(.) / sqrt(Om / nlen_))
 v_oracle_p_val <-  2 * stats::pnorm(-abs(v_oracle_test_statistic), mean=0, sd=1)
 v_oracle_rej <- v_oracle_p_val < cl_
-
 empirical_size_oracle_ <- mean(v_oracle_rej)
-
-paste("Empirical size of oracle is", empirical_size_oracle_)
-
 c05_star_oracle <- quantile(abs(v_oracle_test_statistic), 1 - cl_)
 
-
 # size corrected power ----------------------------------------------------
-
-v_oracle_test_statistic_size_corrected <- map(l_arima_sim, ~ . + (1/sqrt(nlen_)) *sqrt(Om)*del_grid)
 
 df_arima_del_grid <- expand_grid(l_arima_sim, del_grid) %>%
   mutate(
@@ -85,44 +77,82 @@ df_arima_del_grid <- expand_grid(l_arima_sim, del_grid) %>%
     oracle_pval = 2*stats::pnorm(-abs(oracle_dm_stat), mean=0, sd=1),
     oracle_reject_raw_power = oracle_pval < cl_,
     oracle_reject_size_corrected_power = abs(oracle_dm_stat) > c05_star_oracle
-  ) %>%
+  )
+
+Compute_Size_Distort_Max_Power_Loss <- function(simulated_data, bandwidth) {
+
+  print(paste("Running simulation for M =", bandwidth))
+
+  l_dm_test <- map(simulated_data, ~ dm.test.bt(., M = bandwidth, cl = cl_))
+  v_test_statistic <- map_dbl(l_dm_test, ~ pluck(., "stat"))
+  v_reject <- map_dbl(l_dm_test, ~ pluck(., "rej"))
+
+  size_distortion_ <- mean(v_reject) - cl_
+
+  v_standard_stat <- map(l_arima_sim, ~ dm.test.bt(., M = bandwidth, cl = cl_)) %>%
+    map_dbl(., ~ pluck(., "stat"))
+
+  c05_star <- quantile(abs(v_standard_stat), (1 - cl_))
+
+  df_arima_del_grid <- df_arima_del_grid %>%
+    mutate(
+      standard_dm_test =  map(oracle_size_corrected_stat, ~ dm.test.bt(., M = bandwidth, cl = cl_)),
+      standard_raw_power = map_lgl(standard_dm_test, ~ pluck(., "rej")),
+      standard_size_corrected_stat = map_dbl(standard_dm_test, ~ pluck(., "stat")),
+      standard_size_corrected_power = abs(standard_size_corrected_stat) > c05_star
+    )
+
+  df_power_loss <- df_arima_del_grid %>%
+    group_by(del_grid) %>%
+    summarize(
+      standard_power = mean(standard_size_corrected_power),
+      oracle_power = mean(oracle_reject_size_corrected_power),
+      power_loss = oracle_power - standard_power
+    )
+
+  max_power_loss_ <- max(df_power_loss$oracle_power - df_power_loss$standard_power)
+
+  tibble(
+    M = bandwidth,
+    size_distortion = size_distortion_,
+    max_power_loss = max_power_loss_
+  )
+
+
+
+}
+
+# 20 seconds per bandwidth
+
+tic()
+df_sims <- map_dfr(v_Mchoice, ~ Compute_Size_Distort_Max_Power_Loss(l_arima_sim, .)) %>%
   print()
+toc()
 
-# Power of a standard test ------------------------------------------------
-
-v_standard_stat <- map(l_arima_sim, ~ dm.test.bt(., M = v_Mchoice[1], cl = cl_)) %>%
-  map_dbl(., ~ pluck(., "stat"))
-
-c05_star <- quantile(abs(v_standard_stat), (1 - cl_))
-
-# size corrected power ----------------------------------------------------
-
-df_arima_del_grid <- df_arima_del_grid %>%
-  mutate(
-    standard_dm_test =  map(oracle_size_corrected_stat, ~ dm.test.bt(., M = v_Mchoice[2], cl = cl_)),
-    standard_raw_power = map_lgl(standard_dm_test, ~ pluck(., "rej")),
-    standard_size_corrected_stat = map_dbl(standard_dm_test, ~ pluck(., "stat")),
-    standard_size_corrected_power = abs(standard_size_corrected_stat) > c05_star
-  ) %>%
-  glimpse()
+ggplot(df_sims, aes(x = size_distortion, y = max_power_loss, label = M)) +
+  geom_line() +
+  geom_point() +
+  geom_text(nudge_x = .003) +
+  theme_minimal() +
+  labs(
+    x = "Size Distortion",
+    y = "Max Power Loss"
+  ) +
+  theme(
+    panel.grid = element_blank()
+  )
 
 
 # Max Power Loss ----------------------------------------------------------
 
-df_power_loss <- df_arima_del_grid %>%
-  group_by(del_grid) %>%
-  summarize(
-    standard_power = mean(standard_size_corrected_power),
-    oracle_power = mean(oracle_reject_size_corrected_power),
-    power_loss = oracle_power - standard_power
-  ) %>%
+ %>%
   ungroup() %>%
   mutate(
     d_max_power_loss = power_loss == max(power_loss)
   ) %>%
   print()
 
-max_power_loss_ <- max(df_power_loss$oracle_power - df_power_loss$standard_power)
+max_power_loss_ <-
 
 
 
