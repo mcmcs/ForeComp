@@ -20,17 +20,15 @@ set.seed(1234)
 
 T_ <- 1000 + nlen_
 
-Simulate_Data <- function(number_obs) {
+dt0_ <- 0
+v_dt <- vector("double", number_obs)
 
-  dt0_ <- 0
-  v_dt <- vector("double", number_obs)
+for (t in 1:number_obs) {
 
-  for (t in 1:number_obs) {
+  dt0_ <- .5 + .7 * dt0_ + rnorm(1)
+  v_dt[t] <- dt0_
 
-    dt0_ <- .5 + .7 * dt0_ + rnorm(1)
-    v_dt[t] <- dt0_
-
-  }
+}
 
   return(v_dt)
 }
