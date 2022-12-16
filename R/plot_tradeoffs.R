@@ -4,14 +4,16 @@ pacman::p_load(
   forecast,
   astsa,
   ForeComp,
-  tictoc
+  tictoc,
+  furrr
 )
 
 # Global Tuning Parameters ------------------------------------------------
 
-nlen_ <- 1000
-nsim_ <- 1000
+nlen_ <- 200
+nsim_ <- 10000
 cl_ <- .05
+ar1 <- .7
 
 b <- seq(.1, 1, .1)
 m <- floor(b * nlen_)
@@ -30,7 +32,7 @@ v_dt <- vector("double", T_)
 
 for (t in 1:T_) {
 
-  dt0_ <- .5 + .3 * dt0_ + rnorm(1)
+  dt0_ <- .5 + ar1 * dt0_ + rnorm(1)
   v_dt[t] <- dt0_
 
 }
@@ -122,17 +124,24 @@ Compute_Size_Distort_Max_Power_Loss <- function(simulated_data, bandwidth) {
 
 }
 
-# 1 minute per bandwidth
+# 30 minutes
+
+v_M <- 1:10
+
+plan(multisession, workers = 5)
+
+options(future.globals.maxSize= 10 * 1073741824)
 
 tic()
-df_sims <- map_dfr(v_Mchoice, ~ Compute_Size_Distort_Max_Power_Loss(l_arima_sim, .)) %>%
+df_sims <- future_map_dfr(v_M, ~ Compute_Size_Distort_Max_Power_Loss(l_arima_sim, .)) %>%
   print()
 toc()
 
-ggplot(df_sims, aes(x = size_distortion, y = max_power_loss, label = M)) +
-  geom_line() +
-  geom_point() +
-  geom_text(nudge_x = .003) +
+hyper_parameters <- pas
+
+ggplot(filter(df_sims), aes(x = size_distortion, y = max_power_loss, label = M)) +
+  geom_point(size = 6) +
+  # geom_text(nudge_x = .003) +
   theme_minimal() +
   labs(
     x = "Size Distortion",
@@ -141,6 +150,9 @@ ggplot(df_sims, aes(x = size_distortion, y = max_power_loss, label = M)) +
   theme(
     panel.grid = element_blank()
   )
+
+file_out_ <- paste("data/sim", ar1, nlen_, nsim_, sep = "_")
+write_csv(df_sims, paste0(file_out_, ".csv"))
 
 
 # Max Power Loss ----------------------------------------------------------
