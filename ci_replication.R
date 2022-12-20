@@ -23,7 +23,7 @@ inflation <- Load_Data("PGDP") %>% glimpse()
 unemp <- Load_Data("UNEMP") %>% glimpse()
 tbill <- Load_Data("TBILL") %>% glimpse()
 
-Replicate_Table <- function(df, starting_year_quarter, ending_year_quarter, horizon, bandwidth = 3) {
+Replicate_Table <- function(df, starting_year_quarter, ending_year_quarter, horizon, bandwidth = 3, type = "Replication") {
 
   start <- as.Date(starting_year_quarter)
   end <- as.Date(ending_year_quarter)
@@ -100,6 +100,7 @@ Add_Asterisks <- function(df) {
          "WCE-B, M = $T^{1/2}$" = "WCE-B",
          "WPE-D, m = $T^{1/3}$" = "WPE-D"
          ) %>%
+
   t()
 
 }
@@ -131,6 +132,7 @@ Save_Kable <- function(df, file_name) {
 
 v_rows_to_keep <- c(1:4, 6:8, 10:12, 14:16, 18:20, 22:24)
 
+
 #* GDP ---------------------------------------------------------------------
 
 gdp_1 <- map_dfr(1:5, ~ Replicate_Table(gdp, "1987-01-01", "2016-10-01", .)) %>% Add_Asterisks(.)
@@ -143,6 +145,7 @@ gdp_6 <- map_dfr(1:5, ~ Replicate_Table(gdp, "2017-01-01", "2021-10-01", .)) %>%
 mat_gdp <- rbind(gdp_1, gdp_2, gdp_3, gdp_4, gdp_5, gdp_6)[v_rows_to_keep, ]
 
 Save_Kable(mat_gdp, "gdp")
+
 
 #* Inflation ---------------------------------------------------------------------
 
@@ -158,6 +161,7 @@ mat_inf <- rbind(inf_1, inf_2, inf_3, inf_4, inf_5, inf_6)[v_rows_to_keep, ]
 Save_Kable(mat_inf, "inf")
 
 
+
 #* Unemployment ------------------------------------------------------------
 
 unemp_1 <- map_dfr(1:5, ~ Replicate_Table(unemp, "1987-01-01", "2016-10-01", .)) %>% Add_Asterisks(.)
@@ -170,6 +174,7 @@ unemp_6 <- map_dfr(1:5, ~ Replicate_Table(unemp, "2017-01-01", "2021-10-01", .))
 mat_unemp <- rbind(unemp_1, unemp_2, unemp_3, unemp_4, unemp_5, unemp_6)[v_rows_to_keep, ]
 
 Save_Kable(mat_unemp, "unemp")
+
 
 #* TBill -------------------------------------------------------------------
 
@@ -275,6 +280,7 @@ Run_Robustness_Check <- function(df_string, function_name) {
                            "2016-10-01",
                            horizon = .x,
                            bandwidth = .y) %>%
+
   mutate(
     m = .y
     )
