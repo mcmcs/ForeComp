@@ -53,19 +53,6 @@ Replicate_Table <- function(df, starting_year_quarter, ending_year_quarter, hori
   wce_b_ten = dm.test.bt.fb(d, cl = .10, M = floor(sqrt(n))); #fixed-b (WCE-B)
   wpe_d_ten = dm.test.wpe.fb(d, cl=.10, M = floor(n^(1/bandwidth))); # (WPE-D)
 
-  if (type == "Robustness Check") {
-
-  wce_b = dm.test.bt.fb(d, cl = 0.05, M = bandwidth); #fixed-b (WCE-B)
-  wpe_d = dm.test.wpe.fb(d, cl=0.05, M = bandwidth); # (WPE-D)
-  wce_dm = dm.test.bt(d, cl = .05, M = bandwidth)
-
-  wce_b_ten = dm.test.bt.fb(d, cl = .10, M = bandwidth); #fixed-b (WCE-B)
-  wpe_d_ten = dm.test.wpe.fb(d, cl=.10, M = bandwidth); # (WPE-D)
-  wce_dm_ten = dm.test.bt(d, cl = .05, M = bandwidth)
-
-
-  }
-
   df_stats <- tibble("Forecast Horizon" = horizon - 1,
          "WCD-DM" = wce_dm$stat,
          "WCE-B" = wce_b$stat,
@@ -104,15 +91,16 @@ Add_Asterisks <- function(df) {
       "WPE-D" = case_when(`WPE-D_05` == TRUE ~ paste0(`WPE-D`, "**"),
                           `WPE-D_10` == TRUE ~ paste0(`WPE-D`, "*"),
                           TRUE ~ as.character(`WPE-D`)),
-      "DM-BT" = case_when(`WCD-DM_05` == TRUE ~ paste0(`DM`, "**"),
-                          `WCD-DM_10` == TRUE ~ paste0(`DM`, "*"),
-                          TRUE ~ as.character(`DM`)),
+      "WCD-DM" = case_when(`WCD-DM_05` == TRUE ~ paste0(`WCD-DM`, "**"),
+                          `WCD-DM_10` == TRUE ~ paste0(`WCD-DM`, "*"),
+                          TRUE ~ as.character(`WCD-DM`)),
     ) %>%
   select("Forecast Horizon",
-         # "WCD-DM",
+         "WCD-DM",
          "WCE-B, M = $T^{1/2}$" = "WCE-B",
-         "WPE-D, m = $T^{1/3}$" = "WPE-D",
-         "DM-BT") %>%
+         "WPE-D, m = $T^{1/3}$" = "WPE-D"
+         ) %>%
+
   t()
 
 }
@@ -144,7 +132,8 @@ Save_Kable <- function(df, file_name) {
 
 v_rows_to_keep <- c(1:4, 6:8, 10:12, 14:16, 18:20, 22:24)
 
-# GDP ---------------------------------------------------------------------
+
+#* GDP ---------------------------------------------------------------------
 
 gdp_1 <- map_dfr(1:5, ~ Replicate_Table(gdp, "1987-01-01", "2016-10-01", .)) %>% Add_Asterisks(.)
 gdp_2 <- map_dfr(1:5, ~ Replicate_Table(gdp, "1987-01-01", "2021-10-01", .)) %>% Add_Asterisks(.)
@@ -157,7 +146,8 @@ mat_gdp <- rbind(gdp_1, gdp_2, gdp_3, gdp_4, gdp_5, gdp_6)[v_rows_to_keep, ]
 
 Save_Kable(mat_gdp, "gdp")
 
-# Inflation ---------------------------------------------------------------------
+
+#* Inflation ---------------------------------------------------------------------
 
 inf_1 <- map_dfr(1:5, ~ Replicate_Table(inflation, "1987-01-01", "2016-10-01", .)) %>% Add_Asterisks(.)
 inf_2 <- map_dfr(1:5, ~ Replicate_Table(inflation, "1987-01-01", "2021-10-01", .)) %>% Add_Asterisks(.)
@@ -171,7 +161,8 @@ mat_inf <- rbind(inf_1, inf_2, inf_3, inf_4, inf_5, inf_6)[v_rows_to_keep, ]
 Save_Kable(mat_inf, "inf")
 
 
-# Unemployment ------------------------------------------------------------
+
+#* Unemployment ------------------------------------------------------------
 
 unemp_1 <- map_dfr(1:5, ~ Replicate_Table(unemp, "1987-01-01", "2016-10-01", .)) %>% Add_Asterisks(.)
 unemp_2 <- map_dfr(1:5, ~ Replicate_Table(unemp, "1987-01-01", "2021-10-01", .)) %>% Add_Asterisks(.)
@@ -184,7 +175,8 @@ mat_unemp <- rbind(unemp_1, unemp_2, unemp_3, unemp_4, unemp_5, unemp_6)[v_rows_
 
 Save_Kable(mat_unemp, "unemp")
 
-# TBill -------------------------------------------------------------------
+
+#* TBill -------------------------------------------------------------------
 
 tbill_1 <- map_dfr(1:5, ~ Replicate_Table(tbill, "1987-01-01", "2016-10-01", .)) %>% Add_Asterisks(.)
 tbill_2 <- map_dfr(1:5, ~ Replicate_Table(tbill, "1987-01-01", "2021-10-01", .)) %>% Add_Asterisks(.)
@@ -199,7 +191,68 @@ Save_Kable(mat_tbill, "tbill")
 
 # Robustness Checks -------------------------------------------------------
 
-num_obs <- nrow(gdp)
+Check_Sensitity_To_Bandwidth <- function(df, starting_year_quarter, ending_year_quarter, horizon, bandwidth) {
+
+  start <- as.Date(starting_year_quarter)
+  end <- as.Date(ending_year_quarter)
+
+  eval_period <- seq.Date(start, end, by = "quarter")
+
+  filtered_data <- df %>%
+    filter(year_quarter %in% eval_period)
+
+  NC_name <- paste0("NCfor_Step", horizon)
+  SPF_name <- paste0("SPFfor_Step", horizon)
+
+  e1 = filtered_data$Realiz1 - (filtered_data %>% pull(NC_name))  #forecast error from forecaster 1
+  e1[is.na(e1)] <- 0
+
+  e2 = filtered_data$Realiz1 - (filtered_data %>% pull(SPF_name)) #forecast error from forecaster 2
+  e2[is.na(e2)] <- 0
+
+  d  = e1^2 - e2^2  #squared loss differential
+  n = length(d);
+
+  wce_b = dm.test.bt.fb(d, cl = 0.05, M = bandwidth); #fixed-b (WCE-B)
+  wpe_d = dm.test.wpe.fb(d, cl = 0.05, M = bandwidth); # (WPE-D)
+  wce_dm = dm.test.bt(d, cl = 0.05, M = bandwidth)
+
+  wce_b_ten = dm.test.bt.fb(d, cl = .10, M = bandwidth); #fixed-b (WCE-B)
+  wpe_d_ten = dm.test.wpe.fb(d, cl=.10, M = bandwidth); # (WPE-D)
+  wce_dm_ten = dm.test.bt(d, cl = .10, M = bandwidth)
+
+  df_stats <- tibble("Forecast Horizon" = horizon - 1,
+         "WCD-DM" = wce_dm$stat,
+         "WCE-B" = wce_b$stat,
+         "WPE-D" = wpe_d$stat) %>%
+    mutate(
+      across(
+        everything(), ~ round(., digits = 2)
+      ),
+      "Forecast Horizon" = as.character(`Forecast Horizon`),
+
+    )
+
+  df_reject <- tibble("Forecast Horizon" = horizon - 1,
+         "WCD-DM_05" = wce_dm$rej,
+         "WCD-DM_10" = wce_dm_ten$rej,
+         "WCE-B_05" = wce_b$rej,
+         "WCE-B_10" = wce_b_ten$rej,
+         "WPE-D_05" = wpe_d$rej,
+         "WPE-D_10" = wpe_d_ten$rej
+  ) %>%
+    mutate(
+      "Forecast Horizon" = as.character(`Forecast Horizon`),
+    )
+
+  full_join(df_stats, df_reject, by = "Forecast Horizon")
+
+}
+
+num_obs <- gdp %>%
+  filter(., between(year_quarter, as.Date("1987-01-01"), as.Date("2016-10-01"))) %>%
+  nrow()
+
 b <- seq(.1, 1, .1)
 m <- floor(b * num_obs)
 
@@ -222,28 +275,28 @@ Run_Robustness_Check <- function(df_string, function_name) {
   file_name <- paste0(df_string, "_", function_name, "_robust.tex")
 
   df_table <- map2_dfr(df_horizon_bandwidths$horizon, df_horizon_bandwidths$v_bandwidth,
-         ~ Replicate_Table(df,
+         ~ Check_Sensitity_To_Bandwidth(df,
                            "1987-01-01",
                            "2016-10-01",
                            horizon = .x,
-                           bandwidth = .y,
-                           type = "Robustness Check") %>%
+                           bandwidth = .y) %>%
+
   mutate(
     m = .y
     )
   ) %>%
   as_tibble() %>%
-  select(`Forecast Horizon`, m, starts_with("WPE"), starts_with("WCE-B"), starts_with("DM")) %>%
+  select(`Forecast Horizon`, m, starts_with("WPE-D"), starts_with("WCE-B"), starts_with("WCD-DM")) %>%
   mutate(
-    "WPE-D" = case_when(`WPE-D_05` == TRUE ~ paste0(`WPE-D`, "**"),
-                        `WPE-D_10` == TRUE ~ paste0(`WPE-D`, "*"),
-                        TRUE ~ as.character(`WPE-D`)),
-    "WCE-B" = case_when(`WCE-B_05` == TRUE ~ paste0(`WCE-B`, "**"),
-                        `WCE-B_10` == TRUE ~ paste0(`WCE-B`, "*"),
-                        TRUE ~ as.character(`WCE-B`)),
-    "DM-BT" = case_when(`WCD-DM_05` == TRUE ~ paste0(`DM`, "**"),
-                          `WCD-DM_10` == TRUE ~ paste0(`DM`, "*"),
-                          TRUE ~ as.character(`DM`))
+      "WCE-B" = case_when(`WCE-B_05` == TRUE ~ paste0(`WCE-B`, "**"),
+                          `WCE-B_10` == TRUE ~ paste0(`WCE-B`, "*"),
+                          TRUE ~ as.character(`WCE-B`)),
+      "WPE-D" = case_when(`WPE-D_05` == TRUE ~ paste0(`WPE-D`, "**"),
+                          `WPE-D_10` == TRUE ~ paste0(`WPE-D`, "*"),
+                          TRUE ~ as.character(`WPE-D`)),
+      "WCD-DM" = case_when(`WCD-DM_05` == TRUE ~ paste0(`WCD-DM`, "**"),
+                          `WCD-DM_10` == TRUE ~ paste0(`WCD-DM`, "*"),
+                          TRUE ~ as.character(`WCD-DM`)),
   ) %>%
   select("Forecast Horizon", "m", all_of(function_name))
 
@@ -283,13 +336,13 @@ Save_Robustness_Table <- function(list_table_caption_file) {
     column_spec(., 1, border_right = TRUE) %>%
     kable_styling(font_size = 6) %>%
     footnote(
-      general = "Asterisks ** and * indicate two-sided significance at, respectively, the 5% and 10% level using fixed-m asymptotics. m is chosen as $m \\in{1,2,3,4,5,floor(b * t)}$ with $t = 219$ and $b \\in{.1, .2, \\dots,.9, 1.0}$",
+      general = "Asterisks ** and * indicate two-sided significance at, respectively, the 5% and 10% level using fixed-m asymptotics. m is chosen as $m \\in{1,2,3,4,5,floor(b * t)}$ with $t = 120$ and $b \\in{.1, .2, \\dots,.9, 1.0}$",
              threeparttable = TRUE) %>%
-    save_kable(., paste0("../../note/note02_slides/tables/", file_name))
+    save_kable(., paste0("C:/Dropbox/Phil Research Dropbox/Nathan Schor/SchorShin/ForecastComp/note/note02_slides/tables/", file_name))
 }
 
 df_robust_combinations <- expand_grid(dataset = c("gdp", "inflation", "unemp", "tbill"),
-                                      dm = c("WPE-D", "WCE-B", "DM-BT"))
+                                      dm = c("WPE-D", "WCE-B", "WCD-DM"))
 
 walk2(df_robust_combinations$dataset, df_robust_combinations$dm, ~ Run_Robustness_Check(.x, .y) %>% Save_Robustness_Table(.))
 
