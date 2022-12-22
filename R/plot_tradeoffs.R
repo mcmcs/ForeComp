@@ -15,10 +15,7 @@ nsim_ <- 10000
 cl_ <- .05
 ar1 <- .7
 
-b <- seq(.1, 1, .1)
-m <- floor(b * nlen_)
-
-v_Mchoice <- c(1:9, m)
+# v_Mchoice <- c(1:9, m)
 
 set.seed(1234)
 
@@ -126,9 +123,9 @@ Compute_Size_Distort_Max_Power_Loss <- function(simulated_data, bandwidth) {
 
 # 30 minutes
 
-v_M <- 1:10
+v_M <- seq(20, 50, 10)
 
-plan(multisession, workers = 5)
+plan(multisession, workers = 4)
 
 options(future.globals.maxSize= 10 * 1073741824)
 
@@ -137,11 +134,16 @@ df_sims <- future_map_dfr(v_M, ~ Compute_Size_Distort_Max_Power_Loss(l_arima_sim
   print()
 toc()
 
-hyper_parameters <- pas
+file_out_ <- paste("data/sim", ar1, nlen_, nsim_, sep = "_")
+write_csv(df_sims, paste0(file_out_, ".csv"))
 
-ggplot(filter(df_sims), aes(x = size_distortion, y = max_power_loss, label = M)) +
+df_1_10 <- read_csv("data/sim_0.7_200_10000.csv")
+
+df_plotting <- bind_rows(df_1_10, df_sims)
+
+ggplot(df_plotting, aes(x = size_distortion, y = max_power_loss, label = M)) +
   geom_point(size = 6) +
-  # geom_text(nudge_x = .003) +
+  geom_text(nudge_x = .007, nudge_y = .003) +
   theme_minimal() +
   labs(
     x = "Size Distortion",
@@ -151,8 +153,6 @@ ggplot(filter(df_sims), aes(x = size_distortion, y = max_power_loss, label = M))
     panel.grid = element_blank()
   )
 
-file_out_ <- paste("data/sim", ar1, nlen_, nsim_, sep = "_")
-write_csv(df_sims, paste0(file_out_, ".csv"))
 
 
 # Max Power Loss ----------------------------------------------------------
