@@ -103,6 +103,7 @@ Om = ss$spec[1]; #this is 2*pi*f(0), spectrum at zero rather than a spectral den
 mat_stat_o = matrix(NA, nsim, 1);
 mat_rej_o = matrix(NA, nsim, 1);
 for (irep in 1:nsim){
+  irep <- 1 # CHANGE
   dt_sim = mat_dt[, irep,drop=F];
   dmstat = mean(dt_sim) / sqrt(Om / nlen); #Oracle's statistic
   
@@ -195,7 +196,15 @@ print(paste0("maximum power loss = ", max_power_loss));
 ```
 
 
+```{r}
 
+
+
+
+
+
+
+```
 
 
 
