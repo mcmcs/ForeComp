@@ -11,7 +11,10 @@ pacman::p_load(
 
 library(ForeComp)
 
-df_gdp <- read_csv("RDGP_extended.csv") %>%
+nsim_ <- 1000
+cl_ <- .05
+
+df_gdp <- read_csv("PGDP_extended.csv") %>%
     select(X1, starts_with("SPF"), starts_with("NC"), Realiz1) %>%
     mutate(
       year_quarter  = str_replace(X1, ":", "-") %>% yq(.),
@@ -56,9 +59,9 @@ del_grid <-  seq(from=-del_tilde, to=del_tilde, length.out=ndel)
 
 # Size Computation --------------------------------------------------------
 
-l_arima_sim <- map(1:nsim_, ~ arima.sim(m_sim, n = nlen_, innov = rnorm(nlen_, 0, sqrt(a$sigma2))))
+l_arima_sim <- map(1:nsim_, ~ arima.sim(m_sim, n = n, innov = rnorm(n, 0, sqrt(a$sigma2))))
 
-v_oracle_test_statistic <- map_dbl(l_arima_sim, ~ mean(.) / sqrt(Om / nlen_))
+v_oracle_test_statistic <- map_dbl(l_arima_sim, ~ mean(.) / sqrt(Om / n))
 v_oracle_p_val <-  2 * stats::pnorm(-abs(v_oracle_test_statistic), mean=0, sd=1)
 v_oracle_rej <- v_oracle_p_val < cl_
 empirical_size_oracle_ <- mean(v_oracle_rej)
@@ -68,8 +71,8 @@ c05_star_oracle <- quantile(abs(v_oracle_test_statistic), 1 - cl_)
 
 df_arima_del_grid <- expand_grid(l_arima_sim, del_grid) %>%
   mutate(
-    oracle_size_corrected_stat = map2(l_arima_sim, del_grid, ~ .x + (1/sqrt(nlen_)) *sqrt(Om)* .y),
-    oracle_dm_stat = map_dbl(oracle_size_corrected_stat, ~ mean(.) / (sqrt(Om / nlen_))),
+    oracle_size_corrected_stat = map2(l_arima_sim, del_grid, ~ .x + (1/sqrt(n)) *sqrt(Om)* .y),
+    oracle_dm_stat = map_dbl(oracle_size_corrected_stat, ~ mean(.) / (sqrt(Om / n))),
     oracle_pval = 2*stats::pnorm(-abs(oracle_dm_stat), mean=0, sd=1),
     oracle_reject_raw_power = oracle_pval < cl_,
     oracle_reject_size_corrected_power = abs(oracle_dm_stat) > c05_star_oracle
@@ -118,9 +121,9 @@ Compute_Size_Distort_Max_Power_Loss <- function(simulated_data, bandwidth) {
 
 }
 
-# 30 minutes
+# 87 seconds for 14 bandwidths
 
-v_M <- seq(20, 50, 10)
+v_M <- c(1:10, seq(20, 50, 10))
 
 plan(multisession, workers = 4)
 
@@ -130,3 +133,18 @@ tic()
 df_sims <- future_map_dfr(v_M, ~ Compute_Size_Distort_Max_Power_Loss(l_arima_sim, .)) %>%
   print()
 toc()
+
+ggplot(df_sims, aes(x = size_distortion, y = max_power_loss, label = M)) +
+  geom_point(size = 6) +
+  geom_text(nudge_x = .003, nudge_y = .001) +
+  theme_minimal() +
+  labs(
+    x = "Size Distortion",
+    y = "Max Power Loss"
+  ) +
+  theme(
+    panel.grid = element_blank()
+  )
+
+
+
