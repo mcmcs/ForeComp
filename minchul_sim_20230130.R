@@ -4,7 +4,7 @@
 
 rm(list=ls());
 library(forecast)
-library(ForeComp)
+# library(ForeComp)
 library(astsa)
 
 
@@ -15,12 +15,22 @@ cl      = 0.05; # confidence level
 
 
 # Mchoice = 2;   # bandwidth
-M_set = c(seq(from=1, to=10, by=1), seq(from=11, to=100, by=5)); # grid for M
+M_set = c(seq(from=2, to=10, by=1), seq(from=11, to=150, by=10)); # grid for M
 M_set_n = length(M_set); # length of M grid
 
-mat_size_distortion = matrix(NA, M_set_n, 1);
-mat_power_loss = matrix(NA, M_set_n, 1);
 
+# matrix to store results
+# _dm = WCE-DM (traditional NW)
+# _b  = WCE-B (fixed-b NW)
+# _d  =  WPE-D (fixed-b)
+mat_size_distortion_dm = matrix(NA, M_set_n, 1);
+mat_power_loss_dm = matrix(NA, M_set_n, 1);
+
+mat_size_distortion_b = matrix(NA, M_set_n, 1);
+mat_power_loss_b = matrix(NA, M_set_n, 1);
+
+mat_size_distortion_d = matrix(NA, M_set_n, 1);
+mat_power_loss_d = matrix(NA, M_set_n, 1);
 
 set.seed(1234); # set seed
 
@@ -89,7 +99,7 @@ for (iM in 1:M_set_n){
   ss = arma.spec(ar = m_sim$ar, ma = m_sim$ma, var.noise = a$sigma2, n.freq = 100);
   Om = ss$spec[1]; #this is 2*pi*f(0), spectrum at zero rather than a spectral density at zero
 
-  # # Oracle test
+  # # Oracle test (we will do a simpler calculation, see below)
   # mat_stat_o = matrix(NA, nsim, 1);
   # mat_rej_o = matrix(NA, nsim, 1);
   # for (irep in 1:nsim){
@@ -127,8 +137,9 @@ for (iM in 1:M_set_n){
   # --- Size computation for DM-NW
   M = Mchoice;
   mat_stat = matrix(NA, nsim, 1);
-  mat_rej  = matrix(NA, nsim, 1);
   mat_d.var = matrix(NA, nsim, 1);
+  mat_rej_dm  = matrix(NA, nsim, 1);
+  mat_rej_b   = matrix(NA, nsim, 1);
   for (irep in 1:nsim){
     d.cov  = mat_acf[1:(M+1),irep];
     d.var  = ( d.cov[1] + 2*sum( (1 - ((1:M)/M) ) * d.cov[-1] ) ) / nlen;
@@ -137,19 +148,33 @@ for (iM in 1:M_set_n){
     # d.cov = stats::acf(dt_sim, lag.max = (M), type="covariance", plot=FALSE, demean=FALSE)$acf[,,1]; #should I compute ACF under the null regardless? Then, this should be deman = FALSE
     # d.var  = ( d.cov[1] + 2*sum( (1 - ((1:M)/M) ) * d.cov[-1] ) ) / nlen;
 
+    # Traditional NW, DM
     dmstat = mean(mat_dtm[,irep]) / sqrt(d.var);
     pval   = 2 * stats::pnorm(-abs(dmstat), mean=0, sd=1); #p-val based on normal approximation
-    rej    = pval < cl; #reject decision
+    rej_dm    = pval < cl; #reject decision
+
+    # Fixed-b NW
+    b = M / nlen;
+    if (cl == 0.05){
+      crit = 1.9600 + 2.9694*b + 0.4160*b^2 -0.5324*b^3; #0.975 quantile
+    } else if (cl == 0.10){
+      crit = 1.6449 + 2.1859*b + 0.3142*b^2 -0.3427*b^3; #0.950 quantile
+    }
+    # rejection decision
+    rej_b = abs(dmstat) > crit; #reject decision
 
     # store results
     mat_stat[irep,] = dmstat;
-    mat_rej[irep, ] = rej;
     mat_d.var[irep,] = d.var;
+    mat_rej_dm[irep, ] = rej_dm;
+    mat_rej_b[irep, ] = rej_b;
   }
-  size_distortion = mean(mat_rej) - cl;
+  size_distortion_dm = mean(mat_rej_dm) - cl;
+  size_distortion_b = mean(mat_rej_b) - cl;
 
 
   # --- Power of a standard test (DM-NW)
+  # Note that WCE-DM and WCE-B have the same power property when size-corrected
   # --- size-corrected crit val
   c05_star = quantile(abs(mat_stat), (1-cl));
 
@@ -176,31 +201,41 @@ for (iM in 1:M_set_n){
   }
 
 
-
   #======================================
 
   # --- another Oracle ---
   grid = seq(from=0, to=5, by=0.05);
   samp = del_grid;
   pow_gau = pnorm(-1.96+grid) + pnorm(-1.96-grid);
-  powinterp = approx(samp, apply(mat_rej2, 2, mean), grid)$y; #interpolated power
   # plot(grid, approx(samp, apply(mat_rej2, 2, mean), grid)$y)
   # lines(grid, pow_gau)
-  max_power_loss = max(pow_gau-powinterp)
 
 
   # --- Maximum power loss
+  powinterp = approx(samp, apply(mat_rej2, 2, mean), grid)$y; #interpolated power
+  max_power_loss_dm = max(pow_gau-powinterp);
+  max_power_loss_b = max_power_loss_dm; #WCE-DM and WCE-B have the same power property
+
   # max_power_loss = max( apply(mat_rej2_o, 2, mean) - apply(mat_rej2, 2, mean) );
 
   # --- Collect results
   print(paste0("M = ", iM, " / ", M_set_n));
-  mat_size_distortion[iM] = size_distortion;
-  mat_power_loss[iM] = max_power_loss;
+  mat_size_distortion_dm[iM] = size_distortion_dm;
+  mat_power_loss_dm[iM] = max_power_loss_dm;
+
+  mat_size_distortion_b[iM] = size_distortion_b;
+  mat_power_loss_b[iM] = max_power_loss_b;
 
 } #end of iM iteration
 
 # final figure
-plot(mat_size_distortion, mat_power_loss)
+plot(mat_size_distortion_dm, mat_power_loss_b,
+     xlim = c(0, 0.25), ylim = c(0, 0.25),
+     xlab = "size distortion", ylab="maximum power loss", col="red", pch=19, type="b", lty=1, lwd=2);
+lines(mat_size_distortion_b, mat_power_loss_dm, col="blue", pch=18, type="b", lty=1, lwd=2);
+legend(0.15, 0.1, legend=c("WCE-DM", "WCE-B"), col=c("red", "blue"), lty=1, cex=1.5, lwd=2)
+grid(nx = NULL, ny = NULL,
+     lty = 2, col = "gray", lwd = 1)
 
 # # --- plotting (two powers: raw versus size-adjusted power)
 # plot(del_grid, apply(mat_rej, 2, mean), ylim=range(0, 1.0))
