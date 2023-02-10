@@ -11,7 +11,7 @@ pacman::p_load(
 
 library(ForeComp)
 
-nsim_ <- 1000
+nsim_ <- 10000
 cl_ <- .05
 
 df_gdp <- read_csv("PGDP_extended.csv") %>%
@@ -56,6 +56,8 @@ Om = ss$spec[1]; #this is 2*pi*f(0), spectrum at zero rather than a spectral den
 ndel <-  50 #number of deltas
 del_tilde <-  10 #largest delta
 del_grid <-  seq(from=-del_tilde, to=del_tilde, length.out=ndel)
+
+del_grid <- seq(0, 4, .05)
 
 # Size Computation --------------------------------------------------------
 
@@ -121,7 +123,7 @@ Compute_Size_Distort_Max_Power_Loss <- function(simulated_data, bandwidth) {
 
 }
 
-# 87 seconds for 14 bandwidths
+# 87 seconds for 14 bandwidths w/ 1000 sims
 
 v_M <- c(1:10, seq(20, 50, 10))
 
