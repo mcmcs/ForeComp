@@ -11,7 +11,7 @@ pacman::p_load(
 
 library(ForeComp)
 
-nsim_ <- 10000
+nsim_ <- 1000
 cl_ <- .05
 
 df_gdp <- read_csv("PGDP_extended.csv") %>%
@@ -84,7 +84,7 @@ Compute_Size_Distort_Max_Power_Loss <- function(simulated_data, bandwidth) {
 
   print(paste("Running simulation for M =", bandwidth))
 
-  l_dm_test <- map(simulated_data, ~ dm.test.bt(., M = bandwidth, cl = cl_))
+  l_dm_test <- map(simulated_data, ~ dm.test.bt.fb(., M = bandwidth, cl = cl_))
   v_test_statistic <- map_dbl(l_dm_test, ~ pluck(., "stat"))
   v_reject <- map_dbl(l_dm_test, ~ pluck(., "rej"))
 
