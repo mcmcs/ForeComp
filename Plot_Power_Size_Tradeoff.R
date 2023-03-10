@@ -201,12 +201,23 @@ Plot_Size_Power_Tradeoff <- function(raw_data, nlen, nsim, cl, M_set) {
 
   } #end of iM iteration
 
-  # final figure
-  plot(mat_size_distortion_dm, mat_power_loss_b,
-       xlim = c(0, 0.25), ylim = c(0, 0.25),
-       xlab = "size distortion", ylab="maximum power loss", col="red", pch=19, type="b", lty=1, lwd=2);
-  lines(mat_size_distortion_b, mat_power_loss_dm, col="blue", pch=18, type="b", lty=1, lwd=2);
-  legend(0.15, 0.1, legend=c("WCE-DM", "WCE-B"), col=c("red", "blue"), lty=1, cex=1.5, lwd=2)
-  grid(nx = NULL, ny = NULL,
-       lty = 2, col = "gray", lwd = 1)
+  plotting_data <- tibble(
+    M = 1:19,
+    b_size_distortion = mat_size_distortion_b[,1],
+    b_power_loss = mat_power_loss_b[,1]
+  )
+
+  plot <- ggplot(plotting_data, aes(x = b_size_distortion, y = b_power_loss)) +
+    geom_line(size = 1, linetype = "dashed") +
+    geom_point(size = 2.5, color = "blue") +
+    geom_text(aes(label = M), nudge_y = .005) +
+    labs(
+      x = "Size Distortion",
+      y = "Maximum Power Loss",
+      title = series,
+      caption = str_glue("Data from {starting_year} to {ending_year}")
+    ) +
+    theme_minimal()
+
+  ggsave(plot = plot, filename = str_glue("spf_tradeoff_plots/{series}.png"))
 }
