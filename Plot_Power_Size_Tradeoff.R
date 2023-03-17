@@ -202,7 +202,7 @@ Plot_Size_Power_Tradeoff <- function(raw_data, nlen, nsim, cl, M_set) {
   } #end of iM iteration
 
   plotting_data <- tibble(
-    M = 1:19,
+    M = M_set,
     b_size_distortion = mat_size_distortion_b[,1],
     b_power_loss = mat_power_loss_b[,1]
   )
@@ -219,5 +219,6 @@ Plot_Size_Power_Tradeoff <- function(raw_data, nlen, nsim, cl, M_set) {
     ) +
     theme_minimal()
 
-  ggsave(plot = plot, filename = str_glue("spf_tradeoff_plots/{series}.png"))
+  ggsave(plot = plot, filename = str_glue("spf_tradeoff_plots/{series}.png"),
+         width = 7, height = 7, units = "in")
 }

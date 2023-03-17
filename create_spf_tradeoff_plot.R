@@ -43,7 +43,7 @@ for (combo_index in 1:nrow(df_combo)) {
   Plot_Size_Power_Tradeoff(raw_data = df_data_prepped,
                            nlen = length(df_data_prepped), nsim = 10000,
                            cl = .05,
-                           M_set = c(seq(from=2, to=10, by=1), seq(from=11, to=150, by=10))[1:19])
+                           M_set = c(seq(from=2, to=10, by=1), seq(from=11, to=length(df_data_prepped) - 1, by=10)))
 }
 
 
