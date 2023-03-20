@@ -56,13 +56,18 @@ Plot_Size_Power_Tradeoff <- function(raw_data, nlen, nsim, cl, M_set) {
   del_grid = seq(from=0, to=10, by=0.25);
   ndel = length(del_grid);
 
+  v_M <- vector(mode = "integer", length = M_set_n)
+  v_hypothesis_test <- vector(mode = "logical", length = M_set_n)
 
 
   # --- Loop over M set
   for (iM in 1:M_set_n){
 
     Mchoice = M_set[iM]; #our choice of M for this iteration
+    wce_b_rej <- dm.test.bt.fb(raw_data, cl = .05, M = Mchoice)$rej
 
+    v_M[iM] <- Mchoice
+    v_hypothesis_test[iM] <- wce_b_rej
 
     # --- Oracle ---
 
@@ -201,15 +206,28 @@ Plot_Size_Power_Tradeoff <- function(raw_data, nlen, nsim, cl, M_set) {
 
   } #end of iM iteration
 
+  df_hypoth_testing <- tibble(
+    v_M,
+    v_hypothesis_test
+  )
+
   plotting_data <- tibble(
     M = M_set,
     b_size_distortion = mat_size_distortion_b[,1],
     b_power_loss = mat_power_loss_b[,1]
-  )
+  ) %>%
+    left_join(., df_hypoth_testing, by = c("M" = "v_M")) %>%
+    mutate(
+      v_hypothesis_test = case_when(
+        v_hypothesis_test == TRUE ~ "circle",
+        v_hypothesis_test == FALSE ~ "cross"
+      )
+    )
 
   plot <- ggplot(plotting_data, aes(x = b_size_distortion, y = b_power_loss)) +
     geom_line(size = 1, linetype = "dashed") +
-    geom_point(size = 2.5, color = "blue") +
+    geom_point(aes(shape = v_hypothesis_test), size = 4.5, color = "red") +
+    scale_shape_identity() +
     geom_text(aes(label = M), nudge_y = .005) +
     labs(
       x = "Size Distortion",
