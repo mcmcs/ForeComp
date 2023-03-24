@@ -58,16 +58,18 @@ Plot_Size_Power_Tradeoff <- function(raw_data, nlen, nsim, cl, M_set) {
 
   v_M <- vector(mode = "integer", length = M_set_n)
   v_hypothesis_test <- vector(mode = "logical", length = M_set_n)
-
+  v_test_statistic <- vector(mode = "logical", length = M_set_n)
 
   # --- Loop over M set
   for (iM in 1:M_set_n){
 
     Mchoice = M_set[iM]; #our choice of M for this iteration
     wce_b_rej <- dm.test.bt.fb(raw_data, cl = .05, M = Mchoice)$rej
+    wce_b_stat <- dm.test.bt.fb(raw_data, cl = .05, M = Mchoice)$stat
 
     v_M[iM] <- Mchoice
     v_hypothesis_test[iM] <- wce_b_rej
+    v_test_statistic[iM] <- wce_b_stat
 
     # --- Oracle ---
 
@@ -208,8 +210,11 @@ Plot_Size_Power_Tradeoff <- function(raw_data, nlen, nsim, cl, M_set) {
 
   df_hypoth_testing <- tibble(
     v_M,
-    v_hypothesis_test
+    v_hypothesis_test,
+    v_test_statistic
   )
+
+  write_csv(df_hypoth_testing, "wce_b_horizon_2_1987Q1_2016Q4.csv")
 
   plotting_data <- tibble(
     M = M_set,

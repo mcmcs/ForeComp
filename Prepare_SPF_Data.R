@@ -13,10 +13,10 @@ Prepare_SPF_Data <- function(series_name, start_year, end_year) {
     filter(between(year_quarter, as_date(start_year), as_date(end_year))) %>%
     glimpse()
 
-  e1 <- df_gdp$Realiz1 - df_gdp$NCfor_Step1
+  e1 <- df_gdp$Realiz1 - df_gdp$NCfor_Step2
   e1[is.na(e1)] <- 0
 
-  e2 <- df_gdp$Realiz1 - df_gdp$SPFfor_Step1
+  e2 <- df_gdp$Realiz1 - df_gdp$SPFfor_Step2
   e2[is.na(e2)] <- 0
 
   d <- (e1 ^ 2) - (e2 ^ 2)
