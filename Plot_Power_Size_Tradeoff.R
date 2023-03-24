@@ -219,8 +219,8 @@ Plot_Size_Power_Tradeoff <- function(raw_data, nlen, nsim, cl, M_set) {
     left_join(., df_hypoth_testing, by = c("M" = "v_M")) %>%
     mutate(
       v_hypothesis_test = case_when(
-        v_hypothesis_test == TRUE ~ "circle",
-        v_hypothesis_test == FALSE ~ "cross"
+        v_hypothesis_test == TRUE ~ "cross",
+        v_hypothesis_test == FALSE ~ "circle"
       )
     )
 
