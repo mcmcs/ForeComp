@@ -57,8 +57,10 @@ Plot_Size_Power_Tradeoff <- function(raw_data, nlen, nsim, cl, M_set) {
   ndel = length(del_grid);
 
   v_M <- vector(mode = "integer", length = M_set_n)
-  v_hypothesis_test <- vector(mode = "logical", length = M_set_n)
-  v_test_statistic <- vector(mode = "logical", length = M_set_n)
+  v_hypothesis_test_b <- vector(mode = "logical", length = M_set_n)
+  v_test_statistic_b <- vector(mode = "logical", length = M_set_n)
+  v_hypothesis_test_dm <- vector(mode = "logical", length = M_set_n)
+  v_test_statistic_dm <- vector(mode = "logical", length = M_set_n)
 
   # --- Loop over M set
   for (iM in 1:M_set_n){
@@ -66,10 +68,14 @@ Plot_Size_Power_Tradeoff <- function(raw_data, nlen, nsim, cl, M_set) {
     Mchoice = M_set[iM]; #our choice of M for this iteration
     wce_b_rej <- dm.test.bt.fb(raw_data, cl = .05, M = Mchoice)$rej
     wce_b_stat <- dm.test.bt.fb(raw_data, cl = .05, M = Mchoice)$stat
+    wce_dm_rej <- dm.test.bt(raw_data, cl = .05, M = Mchoice)$rej # CHANGE
+    wce_dm_stat <- dm.test.bt(raw_data, cl = .05, M = Mchoice)$stat # CHANGE
 
     v_M[iM] <- Mchoice
-    v_hypothesis_test[iM] <- wce_b_rej
-    v_test_statistic[iM] <- wce_b_stat
+    v_hypothesis_test_b[iM] <- wce_b_rej
+    v_test_statistic_b[iM] <- wce_b_stat
+    v_hypothesis_test_dm[iM] <- wce_dm_rej
+    v_test_statistic_dm[iM] <- wce_dm_stat
 
     # --- Oracle ---
 
@@ -210,11 +216,11 @@ Plot_Size_Power_Tradeoff <- function(raw_data, nlen, nsim, cl, M_set) {
 
   df_hypoth_testing <- tibble(
     v_M,
-    v_hypothesis_test,
-    v_test_statistic
+    v_hypothesis_test_b,
+    v_test_statistic_b,
+    v_hypothesis_test_dm,
+    v_test_statistic_dm
   )
-
-  write_csv(df_hypoth_testing, "wce_b_horizon_2_1987Q1_2016Q4.csv")
 
   plotting_data <- tibble(
     M = M_set,
@@ -223,25 +229,25 @@ Plot_Size_Power_Tradeoff <- function(raw_data, nlen, nsim, cl, M_set) {
   ) %>%
     left_join(., df_hypoth_testing, by = c("M" = "v_M")) %>%
     mutate(
-      v_hypothesis_test = case_when(
-        v_hypothesis_test == TRUE ~ "cross",
-        v_hypothesis_test == FALSE ~ "circle"
+      v_hypothesis_test_b = case_when(
+        v_hypothesis_test_b == TRUE ~ "cross",
+        v_hypothesis_test_b == FALSE ~ "circle"
       )
     )
 
   plot <- ggplot(plotting_data, aes(x = b_size_distortion, y = b_power_loss)) +
     geom_line(size = 1, linetype = "dashed") +
-    geom_point(aes(shape = v_hypothesis_test), size = 4.5, color = "red") +
+    geom_point(aes(shape = v_hypothesis_test_b), size = 4.5, color = "red", stroke = 1.5) +
     scale_shape_identity() +
     geom_text(aes(label = M), nudge_y = .005) +
     labs(
       x = "Size Distortion",
       y = "Maximum Power Loss",
       title = series,
-      caption = str_glue("Data from {starting_year} to {ending_year}")
+      caption = str_glue("Data from {starting_year} to {ending_year}\nHorizon {horizon}")
     ) +
     theme_minimal()
 
-  ggsave(plot = plot, filename = str_glue("spf_tradeoff_plots/{series}.png"),
+  ggsave(plot = plot, filename = str_glue("spf_tradeoff_plots/{series}_{horizon}_{starting_year}_{ending_year}.png"),
          width = 7, height = 7, units = "in")
 }

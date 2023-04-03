@@ -16,12 +16,17 @@ source("Prepare_SPF_Data.R")
 source("Plot_Power_Size_Tradeoff.R")
 
 v_series <- c("RGDP", "TBILL", "UNEMP", "PGDP")
-v_series <- v_series[3] # CHANGE
+v_horizon <- 1:5
 
-df_combo <- tibble(
+df_start_end <- tibble(
+  starting = c("1987-01-01", "1987-01-01", "1987-01-01", "1997-01-01", "2007-01-01", "2017-01-01"),
+  ending = c("2016-12-01", "2021-12-01", "1996-12-01", "2006-12-01", "2016-12-01", "2021-12-01")
+)
+
+df_combo <- expand_grid(
   series = v_series,
-  starting = "1987-01-01",
-  ending = "2016-12-01"
+  horizon = v_horizon,
+  df_start_end
 )
 
 for (combo_index in 1:nrow(df_combo)) {
@@ -38,13 +43,17 @@ for (combo_index in 1:nrow(df_combo)) {
     slice(combo_index) %>%
     pull(ending)
 
-  print(str_glue("Running calcations for {series}"))
+  horizon <- df_combo %>%
+    slice(combo_index) %>%
+    pull(horizon)
 
-  df_data_prepped <- Prepare_SPF_Data(series, starting_year, ending_year)
+  print(str_glue("Running calcations for row {combo_index}/{nrow(df_combo)}"))
+
+  df_data_prepped <- Prepare_SPF_Data(series, horizon, starting_year, ending_year)
   Plot_Size_Power_Tradeoff(raw_data = df_data_prepped,
                            nlen = length(df_data_prepped), nsim = 10000,
                            cl = .05,
-                           M_set = c(1:5, seq(12, 120, 12)))
+                           M_set = c(1:10, seq(11, length(df_data_prepped) - 1, 10)))
 }
 
 
