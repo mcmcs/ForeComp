@@ -5,7 +5,6 @@ Plot_Size_Power_Tradeoff <- function(raw_data, nlen, nsim, cl, M_set) {
 
   M_set_n = length(M_set); # length of M grid
 
-
   # matrix to store results
   # _dm = WCE-DM (traditional NW)
   # _b  = WCE-B (fixed-b NW)
@@ -236,7 +235,7 @@ Plot_Size_Power_Tradeoff <- function(raw_data, nlen, nsim, cl, M_set) {
     )
 
   plot <- ggplot(plotting_data, aes(x = b_size_distortion, y = b_power_loss)) +
-    geom_line(size = 1, linetype = "dashed") +
+    geom_path(size = 1, linetype = "dashed") +
     geom_point(aes(shape = v_hypothesis_test_b), size = 4.5, color = "red", stroke = 1.5) +
     scale_shape_identity() +
     geom_text(aes(label = M), nudge_y = .005) +

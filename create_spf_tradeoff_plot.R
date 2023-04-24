@@ -29,6 +29,8 @@ df_combo <- expand_grid(
   df_start_end
 )
 
+set.seed(1234)
+
 for (combo_index in 1:nrow(df_combo)) {
 
   series <- df_combo %>%
