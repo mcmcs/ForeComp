@@ -11,4 +11,4 @@ LazyData: true
 Depends:
     R (>= 3.0.0),
     stats
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.3
