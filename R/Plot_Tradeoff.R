@@ -1,14 +1,29 @@
 
 
 
-Plot_Tradeoff <- function(data, series_length, number_simulations, conf_level, M_set) {
+Plot_Tradeoff <- function(d_t, number_simulations, M_set) {
 
-  M_set_n = length(M_set); # length of M grid
+  # ==================================================
+  # conf_level is currently hard-coded, and set to 0.05 
+  conf_level = 0.05; 
+  # ==================================================
+  
+  # ==================================================
+  # Potentially useful:
+  # We could calculate a loss differential series inside the function at the cost of four arguments instead of one:
+  # Extra inputs: f1, f2, y, loss_function:
+  # d_t = loss_function(f1,y) - loss_function(f2,y);
+  # ==================================================
 
+  # Housekeeping
+  data          = d_t;           # dt is a loss differential series
+  series_length = nrows(data);   # the number of observations
+  M_set_n       = length(M_set); # length of M grid
+  
   # matrix to store results
   # _dm = WCE-DM (traditional NW)
-  # _b  = WCE-B (fixed-b NW)
-  # _d  =  WPE-D (fixed-b)
+  # _b  = WCE-B  (fixed-b NW)
+  # _d  = WPE-D  (fixed-b)
   mat_size_distortion_dm = matrix(NA, M_set_n, 1);
   mat_power_loss_dm = matrix(NA, M_set_n, 1);
 
@@ -65,11 +80,15 @@ Plot_Tradeoff <- function(data, series_length, number_simulations, conf_level, M
   for (iM in 1:M_set_n){
 
     Mchoice = M_set[iM]; #our choice of M for this iteration
-    wce_b_rej <- dm.test.bt.fb(data, conf_level = .05, M = Mchoice)$rej
-    wce_b_stat <- dm.test.bt.fb(data, conf_level = .05, M = Mchoice)$stat
-    wce_dm_rej <- dm.test.bt(data, conf_level = .05, M = Mchoice)$rej # CHANGE
-    wce_dm_stat <- dm.test.bt(data, conf_level = .05, M = Mchoice)$stat # CHANGE
 
+    testres_b  = dm.test.bt.fb(data, conf_level = .05, M = Mchoice);
+    wce_b_rej  = testres_b$rej
+    wce_b_stat = testres_b$stat
+
+    testres_dm  = dm.test.bt(data, conf_level = .05, M = Mchoice);
+    wce_dm_rej  = testres_dm$rej  # CHANGE
+    wce_dm_stat = testres_dm$stat # CHANGE
+    
     v_M[iM] <- Mchoice
     v_hypothesis_test_b[iM] <- wce_b_rej
     v_test_statistic_b[iM] <- wce_b_stat
