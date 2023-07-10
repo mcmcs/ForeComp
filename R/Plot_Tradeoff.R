@@ -1,8 +1,8 @@
 
 
 
-Plot_Tradeoff <- function(d_t, number_simulations, M_set) {
-
+Plot_Tradeoff <- function(data, f1=NULL, f2=NULL, y=NULL, loss_function = NULL, N_sim = 1000, M_set) {
+  
   # ==================================================
   # conf_level is currently hard-coded, and set to 0.05 
   conf_level = 0.05; 
@@ -15,10 +15,16 @@ Plot_Tradeoff <- function(d_t, number_simulations, M_set) {
   # d_t = loss_function(f1,y) - loss_function(f2,y);
   # ==================================================
 
+  # If the user does not supply a loss_function, we use a quadratic loss
+  if (is.null(loss_function)) {
+    loss_function = function(f, y){ return( (f-y)^2 ); };
+  }
+
   # Housekeeping
-  data          = d_t;           # dt is a loss differential series
+  data          = d_t;            # dt is a loss differential series
   series_length = nrows(data);   # the number of observations
   M_set_n       = length(M_set); # length of M grid
+  number_simulations = N_sim;     # number of simulations
   
   # matrix to store results
   # _dm = WCE-DM (traditional NW)
