@@ -138,10 +138,10 @@ Plot_Tradeoff <- function(d_t, number_simulations, M_set) {
     # --- Standard test
 
 
-    # --- Size computation for DM-NW
+    # --- Size computation for DM-WCE-dm, DM-WCE-b, DM-WPE-d
     M = Mchoice;
-    mat_stat = matrix(NA, number_simulations, 1);
-    mat_d.var = matrix(NA, number_simulations, 1);
+    mat_stat =    matrix(NA, number_simulations, 1);
+    mat_d.var   = matrix(NA, number_simulations, 1);
     mat_rej_dm  = matrix(NA, number_simulations, 1);
     mat_rej_b   = matrix(NA, number_simulations, 1);
     for (irep in 1:number_simulations){
@@ -152,12 +152,12 @@ Plot_Tradeoff <- function(d_t, number_simulations, M_set) {
       # d.cov = stats::acf(dt_sim, lag.max = (M), type="covariance", plot=FALSE, demean=FALSE)$acf[,,1]; #should I compute ACF under the null regardless? Then, this should be deman = FALSE
       # d.var  = ( d.cov[1] + 2*sum( (1 - ((1:M)/M) ) * d.cov[-1] ) ) / nlen;
 
-      # Traditional NW, DM
+      # Traditional NW, DM (DM-WCE-dm)
       dmstat = mean(mat_dtm[,irep]) / sqrt(d.var);
       pval   = 2 * stats::pnorm(-abs(dmstat), mean=0, sd=1); #p-val based on normal approximation
       rej_dm    = pval < conf_level; #reject decision
 
-      # Fixed-b NW
+      # Fixed-b NW (DM-WCE-b)
       b = M / series_length;
       if (conf_level == 0.05){
         crit = 1.9600 + 2.9694*b + 0.4160*b^2 -0.5324*b^3; #0.975 quantile
@@ -167,6 +167,11 @@ Plot_Tradeoff <- function(d_t, number_simulations, M_set) {
       # rejection decision
       rej_b = abs(dmstat) > crit; #reject decision
 
+
+      # ***Minchul DM-WPE-d
+      # do be done
+
+      
       # store results
       mat_stat[irep,] = dmstat;
       mat_d.var[irep,] = d.var;
