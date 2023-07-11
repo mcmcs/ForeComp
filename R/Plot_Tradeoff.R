@@ -15,8 +15,32 @@
 #' @export
 #'
 #' @examples
+#'
+#' Plot_Tradeoff(
+#'   data = UNEMP,
+#'   f1 = "SPFfor_Step1",
+#'   f2 = "NCfor_Step1",
+#'   y = "Realiz1",
+#'   loss_function = NULL,
+#'   n_sim = 1000,
+#'   m_set = c(1:10, seq(from = 11, to = nrow(data) - 1, by = 10))
+#' )
+#'
+#'
+#'
+
+
 
 Plot_Tradeoff <- function(data, f1 = NULL, f2 = NULL, y = NULL, loss_function = NULL, n_sim = 1000, m_set =  c(1:10, seq(11, nrow(data) - 1, 10))) {
+
+  f1 <- data[[f1]]
+  f2 <- data[[f2]]
+  y <- data[[y]]
+
+  e1 <- y - f1
+  e2 <- y - f2
+
+  d <- (e1 ^ 2) - (e2 ^ 2)
 
   # ==================================================
   # conf_level is currently hard-coded, and set to 0.05
