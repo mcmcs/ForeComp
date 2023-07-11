@@ -1,13 +1,28 @@
 
 
 
-Plot_Tradeoff <- function(data, f1 = NULL, f2 = NULL, y = NULL, loss_function = NULL, N_sim = 1000, M_set) {
-  
+#' Title
+#'
+#' @param data
+#' @param f1
+#' @param f2
+#' @param y
+#' @param loss_function
+#' @param n_sim
+#' @param m_set
+#'
+#' @return
+#' @export
+#'
+#' @examples
+
+Plot_Tradeoff <- function(data, f1 = NULL, f2 = NULL, y = NULL, loss_function = NULL, n_sim = 1000, m_set =  c(1:10, seq(11, nrow(data) - 1, 10))) {
+
   # ==================================================
-  # conf_level is currently hard-coded, and set to 0.05 
-  conf_level = 0.05; 
+  # conf_level is currently hard-coded, and set to 0.05
+  conf_level = 0.05;
   # ==================================================
-  
+
   # If the user does not supply a loss_function, we use a quadratic loss
   if (is.null(loss_function)) {
     loss_function = function(f, y){ return( (f-y)^2 ); };
@@ -18,7 +33,7 @@ Plot_Tradeoff <- function(data, f1 = NULL, f2 = NULL, y = NULL, loss_function = 
   series_length = nrows(data);   # the number of observations
   M_set_n       = length(M_set); # length of M grid
   number_simulations = N_sim;     # number of simulations
-  
+
   # matrix to store results
   # _dm = WCE-DM (traditional NW)
   # _b  = WCE-B  (fixed-b NW)
@@ -87,7 +102,7 @@ Plot_Tradeoff <- function(data, f1 = NULL, f2 = NULL, y = NULL, loss_function = 
     testres_dm  = dm.test.bt(data, conf_level = .05, M = Mchoice);
     wce_dm_rej  = testres_dm$rej  # CHANGE
     wce_dm_stat = testres_dm$stat # CHANGE
-    
+
     v_M[iM] <- Mchoice
     v_hypothesis_test_b[iM] <- wce_b_rej
     v_test_statistic_b[iM] <- wce_b_stat
@@ -170,7 +185,7 @@ Plot_Tradeoff <- function(data, f1 = NULL, f2 = NULL, y = NULL, loss_function = 
       # ***Minchul DM-WPE-d
       # do be done
 
-      
+
       # store results
       mat_stat[irep,] = dmstat;
       mat_d.var[irep,] = d.var;
