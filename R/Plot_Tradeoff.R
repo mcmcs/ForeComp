@@ -1,17 +1,17 @@
 
-
-
-#' Title
+#' Visualizes the size distortion maximum power loss tradeoff
+#'
+#' @description `Plot_Tradeoff` creates a plot to show sensitivity of statistical significance to the choice of bandwidth and how size distortion and maximum power loss vary.
 #'
 #' @param data
-#' @param f1
-#' @param f2
-#' @param y
-#' @param loss_function
-#' @param n_sim
-#' @param m_set
+#' @param f1 Column containing forecaster 1's predictions. Should be a string.
+#' @param f2 Column containing forecaster 2's predictions. Should be a string.
+#' @param y Column containing the realized value for the outcome variable. Should be a string.
+#' @param loss_function The transformation applied to the forecast error. Defaults to squared error loss. Should be a string.
+#' @param n_sim The number of simulations used to generate the ARIMA model. Defaults to 1,000. Should be a string.
+#' @param m_set The truncation parameter that controls the number of terms used in estimating the autocovariance matrix. Defaults to M = c(1:10, seq(11, nrow(data) - 1, 10)). Should be a vector of integers with the values of M you would like to plot.
 #'
-#' @return
+#' @return A list of length 2. The first element is a ggplot2 object of the size-power tradeoff. The second element is the underlying data used to construct the plot in element 1.
 #' @export
 #'
 #' @examples
