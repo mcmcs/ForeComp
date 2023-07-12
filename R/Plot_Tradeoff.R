@@ -23,13 +23,13 @@
 #' @examples
 #'
 #' Plot_Tradeoff(
-#'   data = UNEMP,
+#'   data = TBILL,
 #'   f1 = "SPFfor_Step1",
 #'   f2 = "NCfor_Step1",
 #'   y = "Realiz1",
 #'   loss_function = NULL,
 #'   n_sim = 1000,
-#'   m_set = c(1:10, seq(from = 11, to = nrow(data) - 1, by = 10))
+#'   m_set = c(1:10, seq(from = 11, to = nrow(TBILL) - 20, by = 10))
 #' )
 #'
 #'
@@ -110,7 +110,7 @@ Plot_Tradeoff <- function(data, f1 = NULL, f2 = NULL, y = NULL, loss_function = 
   v_test_statistic_dm <- vector(mode = "logical", length = m_set_length)
 
   # --- Loop over M set
-  for (iM in 1:m_set){
+  for (iM in 1:m_set_length){
 
     Mchoice = m_set[iM]; #our choice of M for this iteration
 
@@ -294,9 +294,7 @@ Plot_Tradeoff <- function(data, f1 = NULL, f2 = NULL, y = NULL, loss_function = 
     geom_text(aes(label = M), nudge_y = .005) +
     labs(
       x = "Size Distortion",
-      y = "Maximum Power Loss",
-      title = series,
-      caption = str_glue("Data from {starting_year} to {ending_year}\nHorizon {horizon}")
+      y = "Maximum Power Loss"
     ) +
     theme_minimal()
 

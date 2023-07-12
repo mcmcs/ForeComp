@@ -36,13 +36,13 @@ A list of length 2. The first element is a ggplot2 object of the size-power trad
 \examples{
 
 Plot_Tradeoff(
-  data = UNEMP,
+  data = TBILL,
   f1 = "SPFfor_Step1",
   f2 = "NCfor_Step1",
   y = "Realiz1",
   loss_function = NULL,
   n_sim = 1000,
-  m_set = c(1:10, seq(from = 11, to = nrow(data) - 1, by = 10))
+  m_set = c(1:10, seq(from = 11, to = nrow(TBILL) - 20, by = 10))
 )
 
 
