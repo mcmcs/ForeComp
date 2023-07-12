@@ -3,14 +3,14 @@
 #'
 #' @description `Plot_Tradeoff` creates a plot to show sensitivity of statistical significance to the choice of bandwidth and how size distortion and maximum power loss vary.
 #'
-#' @param data
+#' @param data Data frame
 #' @param f1 Column containing forecaster 1's predictions. Should be a string.
 #' @param f2 Column containing forecaster 2's predictions. Should be a string.
 #' @param y Column containing the realized value for the outcome variable. Should be a string.
-#' @param loss_function The transformation applied to the forecast error. Defaults to squared error loss. Should be a string.
-#' @param n_sim The number of simulations used to generate the ARIMA model. Defaults to 1,000. Should be a string.
-#' @param m_set The truncation parameter that controls the number of terms used in estimating the autocovariance matrix. Defaults to M = c(1:10, seq(11, nrow(data) - 1, 10)). Should be a vector of integers with the values of M you would like to plot.
-#'
+#' @param loss_function The transformation applied to the forecast error. Defaults to squared error loss. The user supplied function should take two inputs and a scalar output. For example, loss = loss_function(f, y).
+#' @param n_sim The number of simulations used to generate the ARIMA model. Defaults to 1,000.
+#' @param m_set The truncation parameter. Defaults to c(1:10, seq( 11, floor(nrow(data)/2), 10)). For a standard long-run variance calculation (for example, using Bartlett kernel), it controls the number of terms used in estimating the autocovariance matrix. It should be a vector of integers with the values of M you would like to plot.
+#' @param seed is a seed for the random number generator. Defaults to 101.
 #' @return A list of length 2. The first element is a ggplot2 object of the size-power tradeoff. The second element is the underlying data used to construct the plot in element 1.
 #' @importFrom forecast auto.arima
 #' @importFrom stats acf
@@ -22,22 +22,32 @@
 #'
 #' @examples
 #'
-#' Plot_Tredeoff(
+#' \donttest{
+#' ## An example with a minimal input
+#' Plot_Tradeoff(
 #'   data = TBILL,
 #'   f1   = "SPFfor_Step1",
 #'   f2   = "NCfor_Step1",
 #'   y    = "Realiz1"
 #' )
+#'
+#'
+#' ## An example with a user supplied inputs (with a larger set of M values)
 #' Plot_Tradeoff(
 #'   data = TBILL,
 #'   f1 = "SPFfor_Step1",
 #'   f2 = "NCfor_Step1",
-#'   y = "Realiz1",
-#'   loss_function = NULL,
-#'   n_sim = 1000,
+#'   y  = "Realiz1",
 #'   m_set = c(1:10, seq(from = 11, to = nrow(TBILL) - 20, by = 10))
 #' )
 #'
+#' ## An example without (f1, f2, y). The function will take the first three columns and use it
+#' tmpdata = TBILL[, c("SPFfor_Step1", "NCfor_Step1", "Realiz1")];
+#' Plot_Tradeoff(
+#'   data = tmpdata
+#' )
+#'
+#' }
 
 
 
@@ -47,14 +57,24 @@ Plot_Tradeoff <- function(data,
                           y  = NULL,
                           loss_function = NULL,
                           n_sim = 1000,
-                          m_set = NULL) {
+                          m_set = NULL,
+                          seed = 101) {
 
-  # handling options
+  # Handling options
+  set.seed(seed);
 
   # Data
-  f1 <- data[[f1]]
-  f2 <- data[[f2]]
-  y <- data[[y]]
+  if (is.null(f1)& is.null(f2) & is.null(y)){
+    f1 = data[[1]];
+    f2 = data[[2]];
+    y  = data[[3]];
+  } else if (!is.null(f1) & !is.null(f2) & !is.null(y)) {
+    f1 <- data[[f1]]
+    f2 <- data[[f2]]
+    y <- data[[y]]
+  } else {
+    stop("f1, f2, y have to be supplied altogether.")
+  }
 
   # If the user does not supply a loss_function, we use a quadratic loss
   if (is.null(loss_function)) {
