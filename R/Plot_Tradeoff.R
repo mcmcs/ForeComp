@@ -22,6 +22,12 @@
 #'
 #' @examples
 #'
+#' Plot_Tredeoff(
+#'   data = TBILL,
+#'   f1   = "SPFfor_Step1",
+#'   f2   = "NCfor_Step1",
+#'   y    = "Realiz1"
+#' )
 #' Plot_Tradeoff(
 #'   data = TBILL,
 #'   f1 = "SPFfor_Step1",
@@ -32,31 +38,53 @@
 #'   m_set = c(1:10, seq(from = 11, to = nrow(TBILL) - 20, by = 10))
 #' )
 #'
-#'
-#'
 
 
 
-Plot_Tradeoff <- function(data, f1 = NULL, f2 = NULL, y = NULL, loss_function = NULL, n_sim = 1000, m_set =  c(1:10, seq(11, nrow(data) - 1, 10))) {
+Plot_Tradeoff <- function(data,
+                          f1 = NULL,
+                          f2 = NULL,
+                          y  = NULL,
+                          loss_function = NULL,
+                          n_sim = 1000,
+                          m_set = NULL) {
 
+  # handling options
+
+  # Data
   f1 <- data[[f1]]
   f2 <- data[[f2]]
   y <- data[[y]]
-
-  e1 <- y - f1
-  e2 <- y - f2
-
-  d <- (e1 ^ 2) - (e2 ^ 2)
-
-  conf_level <- 0.05
-  series_length <- nrow(data)
-  m_set_length <- length(m_set)
 
   # If the user does not supply a loss_function, we use a quadratic loss
   if (is.null(loss_function)) {
     loss_function = function(f, y){ return( (f-y)^2 ); };
   }
 
+  # calculating loss
+  loss1 = loss_function(f1, y);
+  loss2 = loss_function(f2, y);
+  d = loss1 - loss2;
+
+  # e1 <- y - f1
+  # e2 <- y - f2
+  # d <- (e1 ^ 2) - (e2 ^ 2)
+
+  # mset - default value
+  if (is.null(m_set)){
+    if ( floor(nrow(data)/2) > 10){
+      m_set = c(1:10, seq( 11, floor(nrow(data)/2), 10));
+    } else {
+      m_set = seq(1, floor(nrow(data)/2), 1);
+    }
+  }
+
+  # other info
+  conf_level <- 0.05
+  series_length <- nrow(data)
+  m_set_length <- length(m_set)
+
+  # matrix to store
   mat_size_distortion_dm <- matrix(NA, m_set_length, 1)
   mat_power_loss_dm <- matrix(NA, m_set_length, 1)
 
