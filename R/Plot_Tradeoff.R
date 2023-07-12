@@ -17,6 +17,7 @@
 #' @importFrom stats pnorm
 #' @importFrom stats approx
 #' @importFrom astsa arma.spec
+#' @import ggplot2
 #' @export
 #'
 #' @examples
@@ -117,7 +118,7 @@ Plot_Tradeoff <- function(data, f1 = NULL, f2 = NULL, y = NULL, loss_function = 
     wce_b_rej  = testres_b$rej
     wce_b_stat = testres_b$stat
 
-    testres_dm  = dm.test.bt(data, cl = conf_level, M = Mchoice);
+    testres_dm  = dm.test.bt(d, cl = conf_level, M = Mchoice);
     wce_dm_rej  = testres_dm$rej  # CHANGE
     wce_dm_stat = testres_dm$stat # CHANGE
 
@@ -299,6 +300,5 @@ Plot_Tradeoff <- function(data, f1 = NULL, f2 = NULL, y = NULL, loss_function = 
     ) +
     theme_minimal()
 
-  ggsave(plot = plot, filename = str_glue("spf_tradeoff_plots/{series}_{horizon}_{starting_year}_{ending_year}.png"),
-         width = 7, height = 7, units = "in")
+  return(list(plot, plotting_data))
 }
