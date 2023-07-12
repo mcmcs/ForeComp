@@ -23,7 +23,7 @@
 #' @examples
 #'
 #' \donttest{
-#' ## An example with a minimal input
+#' ## A typical example
 #' Plot_Tradeoff(
 #'   data = TBILL,
 #'   f1   = "SPFfor_Step1",
@@ -32,7 +32,7 @@
 #' )
 #'
 #'
-#' ## An example with a user supplied inputs (with a larger set of M values)
+#' ## An example with a user supplied M values (with a larger set of M values)
 #' Plot_Tradeoff(
 #'   data = TBILL,
 #'   f1 = "SPFfor_Step1",
@@ -41,8 +41,8 @@
 #'   m_set = c(1:10, seq(from = 11, to = nrow(TBILL) - 20, by = 10))
 #' )
 #'
-#' ## An example without (f1, f2, y). The function will take the first three columns and use it
-#' tmpdata = TBILL[, c("SPFfor_Step1", "NCfor_Step1", "Realiz1")];
+#' ## An example without (f1, f2, y). The function will take the first three columns and use them
+#' tmpdata = TBILL[, c("SPFfor_Step1", "NCfor_Step1", "Realiz1")]; # data with [f1, f2, y]
 #' Plot_Tradeoff(
 #'   data = tmpdata
 #' )

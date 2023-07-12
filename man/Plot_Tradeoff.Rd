@@ -11,7 +11,8 @@ Plot_Tradeoff(
   y = NULL,
   loss_function = NULL,
   n_sim = 1000,
-  m_set = NULL
+  m_set = NULL,
+  seed = 101
 )
 }
 \arguments{
@@ -28,6 +29,8 @@ Plot_Tradeoff(
 \item{n_sim}{The number of simulations used to generate the ARIMA model. Defaults to 1,000.}
 
 \item{m_set}{The truncation parameter. Defaults to c(1:10, seq( 11, floor(nrow(data)/2), 10)). For a standard long-run variance calculation (for example, using Bartlett kernel), it controls the number of terms used in estimating the autocovariance matrix. It should be a vector of integers with the values of M you would like to plot.}
+
+\item{seed}{is a seed for the random number generator. Defaults to 101.}
 }
 \value{
 A list of length 2. The first element is a ggplot2 object of the size-power tradeoff. The second element is the underlying data used to construct the plot in element 1.
@@ -38,7 +41,7 @@ A list of length 2. The first element is a ggplot2 object of the size-power trad
 \examples{
 
 \donttest{
-## An example with a minimal input
+## A typical example
 Plot_Tradeoff(
   data = TBILL,
   f1   = "SPFfor_Step1",
@@ -47,7 +50,7 @@ Plot_Tradeoff(
 )
 
 
-## An example with a user supplied inputs (with a larger set of M values)
+## An example with a user supplied M values (with a larger set of M values)
 Plot_Tradeoff(
   data = TBILL,
   f1 = "SPFfor_Step1",
@@ -56,8 +59,8 @@ Plot_Tradeoff(
   m_set = c(1:10, seq(from = 11, to = nrow(TBILL) - 20, by = 10))
 )
 
-## An example without (f1, f2, y). The function will take the first three columns and use it
-tmpdata = TBILL[, c("SPFfor_Step1", "NCfor_Step1", "Realiz1")];
+## An example without (f1, f2, y). The function will take the first three columns and use them
+tmpdata = TBILL[, c("SPFfor_Step1", "NCfor_Step1", "Realiz1")]; # data with [f1, f2, y]
 Plot_Tradeoff(
   data = tmpdata
 )
