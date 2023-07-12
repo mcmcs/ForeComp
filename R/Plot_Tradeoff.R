@@ -269,7 +269,7 @@ Plot_Tradeoff <- function(data, f1 = NULL, f2 = NULL, y = NULL, loss_function = 
 
   } #end of iM iteration
 
-  df_hypoth_testing <- tibble(
+  df_hypoth_testing <- data.frame(
     v_M,
     v_hypothesis_test_b,
     v_test_statistic_b,
@@ -277,18 +277,14 @@ Plot_Tradeoff <- function(data, f1 = NULL, f2 = NULL, y = NULL, loss_function = 
     v_test_statistic_dm
   )
 
-  plotting_data <- tibble(
+  df_size_power <- data.frame(
     M = m_set,
     b_size_distortion = mat_size_distortion_b[,1],
     b_power_loss = mat_power_loss_b[,1]
-  ) %>%
-    left_join(., df_hypoth_testing, by = c("M" = "v_M")) %>%
-    mutate(
-      v_hypothesis_test_b = case_when(
-        v_hypothesis_test_b == TRUE ~ "cross",
-        v_hypothesis_test_b == FALSE ~ "circle"
-      )
-    )
+  )
+
+  plotting_data <- merge(df_size_power, df_hypoth_testing, by.x = "M", by.y = "v_M")
+  plotting_data["v_hypothesis_test_b"] <- ifelse(v_hypothesis_test_b == TRUE, "cross", "circle")
 
   plot <- ggplot(plotting_data, aes(x = b_size_distortion, y = b_power_loss)) +
     geom_path(size = 1, linetype = "dashed") +
