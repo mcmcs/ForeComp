@@ -10,6 +10,7 @@
 #' @param loss_function The transformation applied to the forecast error. Defaults to squared error loss. The user supplied function should take two inputs and a scalar output. For example, loss = loss_function(f, y).
 #' @param n_sim The number of simulations used to generate the ARIMA model. Defaults to 1,000.
 #' @param m_set The truncation parameter. Defaults to c(1:10, seq( 11, floor(nrow(data)/2), 10)). For a standard long-run variance calculation (for example, using Bartlett kernel), it controls the number of terms used in estimating the autocovariance matrix. It should be a vector of integers with the values of M you would like to plot.
+#' @param no_m_label TRUE if plot without m labels. Defaults to FALSE.
 #' @return A list of length 2. The first element is a ggplot2 object of the size-power tradeoff. The second element is the underlying data used to construct the plot in element 1.
 #' @importFrom forecast auto.arima
 #' @importFrom stats acf
@@ -24,12 +25,14 @@
 #' \donttest{
 #' ## A typical example
 #' set.seed(1234);
-#' Plot_Tradeoff(
+#' output = Plot_Tradeoff(
 #'   data = TBILL,
 #'   f1   = "SPFfor_Step1",
 #'   f2   = "NCfor_Step1",
 #'   y    = "Realiz1"
 #' )
+#' output[[1]] # The first element is a ggplot2 object of the size-power tradeoff.
+#' output[[2]] # The second element is the underlying data used to construct the plot in element 1.
 #'
 #'
 #' ## An example with a user supplied M values (with a larger set of M values)
@@ -60,7 +63,7 @@ Plot_Tradeoff <- function(data,
                           loss_function = NULL,
                           n_sim = 1000,
                           m_set = NULL,
-                          seed = 101) {
+                          no_m_label = FALSE) {
 
   # Handling options
 
@@ -85,11 +88,7 @@ Plot_Tradeoff <- function(data,
   # calculating loss
   loss1 = loss_function(f1, y);
   loss2 = loss_function(f2, y);
-  d = loss1 - loss2;
-
-  # e1 <- y - f1
-  # e2 <- y - f2
-  # d <- (e1 ^ 2) - (e2 ^ 2)
+  d     = loss1 - loss2;
 
   # mset - default value
   if (is.null(m_set)){
@@ -146,9 +145,6 @@ Plot_Tradeoff <- function(data,
 
 
   # --- Setting for trade-off figure
-  # ndel = 50; # number of deltas
-  # del_tilde = 10; # largest delta
-  # del_grid = seq(from=-del_tilde, to=del_tilde, length.out=ndel);
   del_grid = seq(from=0, to=10, by=0.25);
   ndel = length(del_grid);
 
@@ -185,38 +181,6 @@ Plot_Tradeoff <- function(data,
     ss = astsa::arma.spec(ar = m_sim$ar, ma = m_sim$ma, var.noise = a$sigma2, n.freq = 100);
     Om = ss$spec[1]; #this is 2*pi*f(0), spectrum at zero rather than a spectral density at zero
 
-    # # Oracle test (we will do a simpler calculation, see below)
-    # mat_stat_o = matrix(NA, nsim, 1);
-    # mat_rej_o = matrix(NA, nsim, 1);
-    # for (irep in 1:nsim){
-    #   dmstat = mean(mat_dtm[,irep]) / sqrt(Om / nlen); #Oracle's statistic
-    #   pval = 2 * stats::pnorm(-abs(dmstat), mean=0, sd=1); #p-val based on normal approximation
-    #   rej = pval < cl; #reject decision
-    #   mat_stat_o[irep, 1] = dmstat;
-    #   mat_rej_o[irep,1] = rej;
-    # }
-    # # print("empirical size of oracle");
-    # # print(mean(mat_rej_o));
-    #
-    #
-    # # --- find a cut-off (c*) to get size-corrected critical value
-    # c05_star_o = quantile(abs(mat_stat_o), (1-cl));
-    #
-    # # size corrected power
-    # mat_rej_o  = matrix(NA, nsim, ndel);
-    # mat_rej2_o = matrix(NA, nsim, ndel);
-    # for (idel in 1:ndel){
-    #   for (irep in 1:nsim){
-    #     dmstat = (mat_dtm[,irep] + (1/sqrt(nlen)) *sqrt(Om)*del_grid[idel]) / sqrt(Om / nlen); #statistic
-    #     pval = 2*stats::pnorm(-abs(dmstat), mean=0, sd=1); # p-val from normal approximation
-    #     rej = pval < cl; # reject decision
-    #     mat_rej_o[irep, idel] = rej; # this is for raw power
-    #     mat_rej2_o[irep, idel] = abs(dmstat) > c05_star_o; # for size-corrected power
-    #   }
-    # }
-
-
-
     # --- Standard test
 
 
@@ -229,10 +193,6 @@ Plot_Tradeoff <- function(data,
     for (irep in 1:n_sim){
       d.cov  = mat_acf[1:(M+1),irep];
       d.var  = ( d.cov[1] + 2*sum( (1 - ((1:M)/M) ) * d.cov[-1] ) ) / series_length;
-
-      # dt_sim = mat_dt[,irep];
-      # d.cov = stats::acf(dt_sim, lag.max = (M), type="covariance", plot=FALSE, demean=FALSE)$acf[,,1]; #should I compute ACF under the null regardless? Then, this should be deman = FALSE
-      # d.var  = ( d.cov[1] + 2*sum( (1 - ((1:M)/M) ) * d.cov[-1] ) ) / nlen;
 
       # Traditional NW, DM (DM-WCE-dm)
       dmstat = mean(mat_dtm[,irep]) / sqrt(d.var);
@@ -298,16 +258,11 @@ Plot_Tradeoff <- function(data,
     grid = seq(from=0, to=5, by=0.05);
     samp = del_grid;
     pow_gau = stats::pnorm(-1.96+grid) + stats::pnorm(-1.96-grid);
-    # plot(grid, approx(samp, apply(mat_rej2, 2, mean), grid)$y)
-    # lines(grid, pow_gau)
-
 
     # --- Maximum power loss
     powinterp = stats::approx(samp, apply(mat_rej2, 2, mean), grid)$y; #interpolated power
     max_power_loss_dm = max(pow_gau-powinterp);
     max_power_loss_b = max_power_loss_dm; #WCE-DM and WCE-B have the same power property
-
-    # max_power_loss = max( apply(mat_rej2_o, 2, mean) - apply(mat_rej2, 2, mean) );
 
     # --- Collect results
     print(paste0("M = ", iM, " / ", m_set_length));
@@ -336,16 +291,24 @@ Plot_Tradeoff <- function(data,
   plotting_data <- merge(df_size_power, df_hypoth_testing, by.x = "M", by.y = "v_M")
   plotting_data["v_hypothesis_test_b"] <- ifelse(v_hypothesis_test_b == TRUE, "cross", "circle")
 
+
+
   plot <- ggplot(plotting_data, aes(x = b_size_distortion, y = b_power_loss)) +
-    geom_path(size = 1, linetype = "dashed") +
+    geom_path(linewidth = 1, linetype = "dashed") +
     geom_point(aes(shape = v_hypothesis_test_b), size = 4.5, color = "red", stroke = 1.5) +
     scale_shape_identity() +
-    geom_text(aes(label = M), nudge_y = .005) +
     labs(
       x = "Size Distortion",
       y = "Maximum Power Loss"
     ) +
     theme_minimal()
+
+  # add m_set annotation
+  if (no_m_label == FALSE){
+    plot <- plot + geom_text(aes(label = M), nudge_y = .005)
+  }
+
+
 
   return(list(plot, plotting_data))
 }
