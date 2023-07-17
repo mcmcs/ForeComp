@@ -303,7 +303,7 @@ Plot_Tradeoff <- function(data,
 
 
     # --- Maximum power loss
-    powinterp = approx(samp, apply(mat_rej2, 2, mean), grid)$y; #interpolated power
+    powinterp = stats::approx(samp, apply(mat_rej2, 2, mean), grid)$y; #interpolated power
     max_power_loss_dm = max(pow_gau-powinterp);
     max_power_loss_b = max_power_loss_dm; #WCE-DM and WCE-B have the same power property
 
