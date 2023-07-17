@@ -32,6 +32,10 @@
 #' }
 #' @author Minchul Shin
 #' @export
+#' @keywords internal
+#' @noRd
+
+
 dm.test.r = function(d, h=1, cl = 0.05){
 
   n = length(d);
