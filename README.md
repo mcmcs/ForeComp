@@ -1,4 +1,8 @@
 # ForeComp
 
-This is a private repo for the DM test package.
+This is a repo for ForeComp package. ForeComp ...
+
+# Install latest version from GitHub
+install.packages("devtools")
+devtools::install_github("mcmcs/Forecomp")
 

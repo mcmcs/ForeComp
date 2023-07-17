@@ -1,12 +1,15 @@
 Package: ForeComp
 Type: Package
 Title: Testing for equal predictive ability
+Description: This package generates a size-power trade-off plot for a given Diebold-Mariano test.
 Version: 0.1.0
-Author: Minchul Shin, Nathan Schor
-Maintainer: Minchul Shin <visiblehand@gmail.com>
-Description: Collection of functions to preform a statistical for equal predictive ability.
+Authors@R: c(
+  person("Nathan", "Schor", role = c("aut"))
+  person("Minchul", "Shin", email = "visiblehand@gmail.com", role = c("aut", "cre")),
+  )
 License: GPL-3
 Encoding: UTF-8
+URL: https://github.com/mcmcs/ForeComp
 LazyData: true
 Depends:
     R (>= 3.0.0),
