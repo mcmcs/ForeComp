@@ -16,15 +16,17 @@
 #' @importFrom stats acf
 #' @importFrom stats pnorm
 #' @importFrom stats approx
+#' @importFrom stats arima.sim
+#' @importFrom stats quantile
+#' @importFrom stats rnorm
 #' @importFrom astsa arma.spec
 #' @import ggplot2
 #' @export
 #'
 #' @examples
 #'
-#' \donttest{
-#' ## A typical example
-#' set.seed(1234);
+#' # A typical example
+#' set.seed(1234)
 #' output = Plot_Tradeoff(
 #'   data = TBILL,
 #'   f1   = "SPFfor_Step1",
@@ -35,8 +37,8 @@
 #' output[[2]] # The second element is the underlying data used to construct the plot in element 1.
 #'
 #'
-#' ## An example with a user supplied M values (with a larger set of M values)
-#' set.seed(1234);
+#' # An example with a user supplied M values (with a larger set of M values)
+#' set.seed(1234)
 #' Plot_Tradeoff(
 #'   data = TBILL,
 #'   f1 = "SPFfor_Step1",
@@ -45,14 +47,13 @@
 #'   m_set = c(1:10, seq(from = 11, to = nrow(TBILL) - 20, by = 10))
 #' )
 #'
-#' ## An example without (f1, f2, y). The function will take the first three columns and use them
-#' set.seed(1234);
-#' tmpdata = TBILL[, c("SPFfor_Step1", "NCfor_Step1", "Realiz1")]; # data with [f1, f2, y]
+#' # An example without (f1, f2, y). The function will take the first three columns and use them
+#' set.seed(1234)
+#' tmpdata = TBILL[, c("SPFfor_Step1", "NCfor_Step1", "Realiz1")] # data with [f1, f2, y]
 #' Plot_Tradeoff(
 #'   data = tmpdata
 #' )
 #'
-#' }
 
 
 
