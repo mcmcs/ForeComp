@@ -99,6 +99,10 @@ Plot_Tradeoff <- function(data,
     }
   }
 
+  if (!is.logical(no_m_label)) {stop("Argument 'no_m_label' should be either TRUE or FALSE.")}
+  if (!is.numeric(n_sim) | n_sim %% 1 != 0 | n_sim <= 0) {stop("Argument 'n_sim' should be a natural number.")}
+
+
   # other info
   conf_level <- 0.05
   series_length <- nrow(data)
