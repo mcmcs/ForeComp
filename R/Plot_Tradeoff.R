@@ -49,7 +49,7 @@
 #' )
 #'
 #' # An example with a user supplied loss function
-#' # Suppose we want to use the mean absolute error as a loss function rather than a quadratic loss function
+#' # To use the mean absolute error as a loss function rather than a quadratic loss function
 #' set.seed(1234)
 #' output = Plot_Tradeoff(
 #'   data = TBILL,

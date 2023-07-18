@@ -62,8 +62,8 @@ Plot_Tradeoff(
   m_set = c(1:10, seq(from = 11, to = nrow(TBILL) - 20, by = 10))
 )
 
-# An example with a user spplied loss function
-# Suppose we want to use the mean absolute error as a loss function rather than a quadratic loss function
+# An example with a user supplied loss function
+# To use the mean absolute error as a loss function rather than a quadratic loss function
 set.seed(1234)
 output = Plot_Tradeoff(
   data = TBILL,
@@ -80,4 +80,7 @@ Plot_Tradeoff(
   data = tmpdata
 )
 
+}
+\author{
+Nathan Schor and Minchul Shin
 }
