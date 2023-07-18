@@ -32,11 +32,10 @@ test_that("Check that the M labels are plotted by default.", {
   output = Plot_Tradeoff(data = TBILL,
                 f1   = "SPFfor_Step1",
                 f2   = "NCfor_Step1",
-                y    = "Realiz1",
+                y    = "Realiz1"
                 );
 
-  expect_false(is.null(output[[1]]$layers[[3]]$computed_mapping$label))
-
+  expect_false(is.null(output[[1]]$layers[[3]][["constructor"]][[2]][["label"]]))
 })
 
 # =====================================================
