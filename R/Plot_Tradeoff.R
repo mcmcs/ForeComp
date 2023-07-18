@@ -47,6 +47,17 @@
 #'   m_set = c(1:10, seq(from = 11, to = nrow(TBILL) - 20, by = 10))
 #' )
 #'
+#' # An example with a user spplied loss function
+#' # Suppose we want to use the mean absolute error as a loss function rather than a quadratic loss function
+#' set.seed(1234)
+#' output = Plot_Tradeoff(
+#'   data = TBILL,
+#'   f1   = "SPFfor_Step1",
+#'   f2   = "NCfor_Step1",
+#'   y    = "Realiz1",
+#'   loss_function = function(f,y){ abs(f-y) }
+#' )
+#'
 #' # An example without (f1, f2, y). The function will take the first three columns and use them
 #' set.seed(1234)
 #' tmpdata = TBILL[, c("SPFfor_Step1", "NCfor_Step1", "Realiz1")] # data with [f1, f2, y]
