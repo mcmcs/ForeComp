@@ -21,6 +21,7 @@
 #' @importFrom stats quantile
 #' @importFrom stats rnorm
 #' @importFrom astsa arma.spec
+#' @importFrom rlang .data
 #' @import ggplot2
 #' @export
 #'
@@ -309,7 +310,7 @@ Plot_Tradeoff <- function(data,
   plotting_data["v_hypothesis_test_b"] <- ifelse(v_hypothesis_test_b == TRUE, "cross", "circle")
 
 
-  plot <- ggplot(plotting_data, aes(x = b_size_distortion, y = b_power_loss)) +
+  plot <- ggplot(plotting_data, aes(x = .data$b_size_distortion, y = .data$b_power_loss)) +
     geom_path(linewidth = 1, linetype = "dashed") +
     geom_point(aes(shape = v_hypothesis_test_b), size = 4.5, color = "red", stroke = 1.5) +
     scale_shape_identity() +
