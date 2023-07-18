@@ -24,7 +24,7 @@ Plot_Tradeoff(
 
 \item{y}{Column containing the realized value for the outcome variable. Should be a string.}
 
-\item{loss_function}{The transformation applied to the forecast error. Defaults to squared error loss. The user supplied function should take two inputs and a scalar output. For example, loss = loss_function(f, y).}
+\item{loss_function}{The transformation applied to the forecast error. Defaults to squared error loss. The user supplied function should take two inputs and a scalar output, loss = loss_function(f, y). For example, quadratic loss function would be defined as \code{loss_function=function(f,y){(f-y)^2}}.}
 
 \item{n_sim}{The number of simulations used to generate the ARIMA model. Defaults to 1,000.}
 

@@ -7,7 +7,7 @@
 #' @param f1 Column containing forecaster 1's predictions. Should be a string.
 #' @param f2 Column containing forecaster 2's predictions. Should be a string.
 #' @param y Column containing the realized value for the outcome variable. Should be a string.
-#' @param loss_function The transformation applied to the forecast error. Defaults to squared error loss. The user supplied function should take two inputs and a scalar output. For example, loss = loss_function(f, y).
+#' @param loss_function The transformation applied to the forecast error. Defaults to squared error loss. The user supplied function should take two inputs and a scalar output, loss = loss_function(f, y). For example, quadratic loss function would be defined as \code{loss_function=function(f,y){(f-y)^2}}.
 #' @param n_sim The number of simulations used to generate the ARIMA model. Defaults to 1,000.
 #' @param m_set The truncation parameter. Defaults to c(1:10, seq( 11, floor(nrow(data)/2), 10)). For a standard long-run variance calculation (for example, using Bartlett kernel), it controls the number of terms used in estimating the autocovariance matrix. It should be a vector of integers with the values of M you would like to plot.
 #' @param no_m_label TRUE if plot without m labels. Defaults to FALSE.
@@ -308,7 +308,6 @@ Plot_Tradeoff <- function(data,
   plotting_data["v_hypothesis_test_b"] <- ifelse(v_hypothesis_test_b == TRUE, "cross", "circle")
 
 
-
   plot <- ggplot(plotting_data, aes(x = b_size_distortion, y = b_power_loss)) +
     geom_path(linewidth = 1, linetype = "dashed") +
     geom_point(aes(shape = v_hypothesis_test_b), size = 4.5, color = "red", stroke = 1.5) +
@@ -323,8 +322,6 @@ Plot_Tradeoff <- function(data,
   if (no_m_label == FALSE){
     plot <- plot + geom_text(aes(label = M), nudge_y = .005)
   }
-
-
 
   return(list(plot, plotting_data))
 }
