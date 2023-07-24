@@ -320,7 +320,6 @@ Plot_Tradeoff <- function(data,
     theme_minimal() +
     theme(legend.position = "bottom", legend.title = element_blank()) +
     scale_shape_manual(values=c(16, 4), labels = c("H0 not rejected", "H0 rejected"))
-  plot
 
   # add m_set annotation
   if (no_m_label == FALSE){
