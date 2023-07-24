@@ -39,7 +39,7 @@
 #' output[[2]] # The second element is the underlying data used to construct the plot in element 1.
 #'
 #'
-#' # An example with a user supplied M values (with a larger set of M values)
+#' # An example with user supplied M values (with a larger set of M values)
 #' set.seed(1234)
 #' Plot_Tradeoff(
 #'   data = TBILL,
