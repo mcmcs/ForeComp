@@ -31,7 +31,10 @@
 #' \item \code{pval} is an associated p-value
 #' }
 #' @author Minchul Shin
-#' @export
+#' @keywords internal
+#' @noRd
+
+
 dm.test.r = function(d, h=1, cl = 0.05){
 
   n = length(d);
@@ -77,7 +80,8 @@ dm.test.r = function(d, h=1, cl = 0.05){
 #' \item \code{pval} is an associated p-value
 #' }
 #' @author Minchul Shin
-#' @export
+#' @keywords internal
+#' @noRd
 dm.test.r.m = function(d, h=1, cl = 0.05){
 
   n = length(d);
@@ -127,7 +131,8 @@ dm.test.r.m = function(d, h=1, cl = 0.05){
 #' \item \code{pval} is an associated p-value
 #' }
 #' @author Minchul Shin
-#' @export
+#' @keywords internal
+#' @noRd
 dm.test.bt = function(d, M = NA, Mopt = NA, cl = 0.05){
 
   n = length(d);
@@ -187,7 +192,8 @@ dm.test.bt = function(d, M = NA, Mopt = NA, cl = 0.05){
 #' \item \code{pval} is an associated p-value
 #' }
 #' @author Minchul Shin
-#' @export
+#' @keywords internal
+#' @noRd
 dm.test.bt.fb = function(d, M = NA, Mopt = NA, cl = 0.05){
 
   n = length(d);
@@ -260,7 +266,8 @@ dm.test.bt.fb = function(d, M = NA, Mopt = NA, cl = 0.05){
 #' \item \code{pval} is an associated p-value
 #' }
 #' @author Minchul Shin
-#' @export
+#' @keywords internal
+#' @noRd
 dm.test.ewc.fb = function(d, B = NA, Bopt = NA, cl = 0.05){
 
   n = length(d);
@@ -325,7 +332,8 @@ dm.test.ewc.fb = function(d, B = NA, Bopt = NA, cl = 0.05){
 #' \item \code{pval} is an associated p-value
 #' }
 #' @author Minchul Shin
-#' @export
+#' @keywords internal
+#' @noRd
 dm.test.wpe.fb = function(d, M = NA, Mopt = NA, cl = 0.05){
 
   n = length(d);
@@ -378,7 +386,8 @@ dm.test.wpe.fb = function(d, M = NA, Mopt = NA, cl = 0.05){
 #' \item \code{pval} is an associated p-value
 #' }
 #' @author Minchul Shin
-#' @export
+#' @keywords internal
+#' @noRd
 dm.test.im = function(d, q = 2, cl = 0.05){
 
   n = length(d);
@@ -410,199 +419,3 @@ dm.test.im = function(d, q = 2, cl = 0.05){
   return(outls);
 }
 
-
-# ---------------------------------------------------------------
-#' CNR (2017), |t|-test statitic
-#'
-#' Randomization test based on asymptotic symmetry, |t|-test statistic
-#'
-#' @param d loss differential
-#' @param q number of blocks
-#' @param cl confidence level (default = 0.05, i.e., 5\%)
-#' @param R number of randomized test stats
-#' @return This function returns a class with the following elements
-#' \itemize{
-#' \item \code{rej} is a T/F value. TRUE (reject), FALSE (accept)
-#' \item \code{stat} is a test statistic
-#' \item \code{pval} is an associated p-value
-#' }
-#' @author Minchul Shin
-#' @export
-dm.test.cnr.t = function(d, q = 2, cl = 0.05){
-
-  n = length(d);
-
-  # b = n/q; #block size (q should be multiple of n, it does not have to be, but for an ease of computation ... )
-
-  # poorman's way of getting out from the case in which n is not a multiple of q
-  b = ceiling(n/q);
-  D = rep(NA,(b*q));
-  D[1:n] = d;
-
-  # ---
-  # t-version, eqn (17) in CRS
-  Sj     = sqrt(n) * as.matrix(apply(matrix(D, nrow = b, ncol = q), 2, mean, na.rm=T));
-  Sbar   = mean(Sj);
-  Sigbar = sum( (Sj-Sbar)^2 ) / (q-1);
-  dmstat = abs(Sbar) / sqrt(Sigbar / q);
-  # sign transformation of t-stats
-  M = 2^q;
-  G = as.matrix(expand.grid(Map(c, rep(-1,q), rep(1,q))));
-  Sj_k = G * rep(Sj, rep.int(M, q));
-  Sbar_k = apply(Sj_k, 1, mean);
-  Sigbar_k = apply( ( Sj_k - Sbar_k %*% matrix(1, nrow = 1, ncol = q) )^2, 1, sum) / (q-1);
-  dmstat_k = abs(Sbar_k) / sqrt(Sigbar_k / q);
-  # ---
-
-  # # ---
-  # # wald-version, eqn (16) in CRS
-  # Sj = sqrt(n) * as.matrix(apply(matrix(D, nrow = b, ncol = q), 2, mean, na.rm=T));
-  # Sbar = mean(Sj);
-  # Sigbar = as.double(t(Sj)%*%Sj / q);
-  # dmstat = q * ( (Sbar)^2 ) / Sigbar; #Wald-type test stat
-  # # sign transformed of wald-stats
-  # # note in d=1, there is no effect of sign change on Sigbar
-  # M = 2^q;
-  # G = as.matrix(expand.grid(Map(c, rep(-1,q), rep(1,q))));
-  # Sbar_k   = G%*%Sj / q;
-  # Sigbar_k = Sigbar; # note in d=1, there is no effect of sign change on Sigbar
-  # dmstat_k = q*(Sbar_k^2) / Sigbar_k;
-  # # ---
-
-  # ---
-  # decision-rule (1 if reject)
-  dmstat_k = sort(dmstat_k);
-  k = ceiling(M*(1-cl));
-  if (dmstat == dmstat_k[k]){
-
-    Mp = sum(dmstat_k > dmstat_k[k]);
-    M0 = sum(dmstat_k == dmstat_k[k])
-
-    a = (M*cl - Mp) / M0;
-    rej = (1 == rbinom(n=1, size=1, prob=a)); #randomization
-
-  } else {
-    rej = (dmstat > dmstat_k[k]);
-  }
-
-  # p-value
-  pval = mean(dmstat >= dmstat_k); #eqn (9) in CNR
-
-  #output
-  outls = list();
-  outls$rej  = rej;
-  outls$stat = dmstat;
-  outls$pval = pval;
-
-  return(outls);
-}
-
-# ---------------------------------------------------------------
-#' CNR (2017), Wald-statistic
-#'
-#' Randomization test based on asymptotic symmetry, Wald-statistic
-#'
-#' @param d loss differential
-#' @param q number of blocks
-#' @param cl confidence level (default = 0.05, i.e., 5\%)
-#' @param R number of randomized test stats
-#' @return This function returns a class with the following elements
-#' \itemize{
-#' \item \code{rej} is a T/F value. TRUE (reject), FALSE (accept)
-#' \item \code{stat} is a test statistic
-#' \item \code{pval} is an associated p-value
-#' }
-#' @author Minchul Shin
-#' @export
-dm.test.cnr.w = function(d, q = 2, cl = 0.05){
-
-  n = length(d);
-
-  # b = n/q; #block size (q should be multiple of n, it does not have to be, but for an ease of computation ... )
-
-  # poorman's way of getting out from the case in which n is not a multiple of q
-  b = ceiling(n/q);
-  D = rep(NA,(b*q));
-  D[1:n] = d;
-
-  # # ---
-  # # t-version, eqn (17) in CRS
-  # Sj     = sqrt(n) * as.matrix(apply(matrix(D, nrow = b, ncol = q), 2, mean, na.rm=T));
-  # Sbar   = mean(Sj);
-  # Sigbar = sum( (Sj-Sbar)^2 ) / (q-1);
-  # dmstat = abs(Sbar) / sqrt(Sigbar / q);
-  # # sign transformation of t-stats
-  # M = 2^q;
-  # G = as.matrix(expand.grid(Map(c, rep(-1,q), rep(1,q))));
-  # Sj_k = G * rep(Sj, rep.int(M, q));
-  # Sbar_k = apply(Sj_k, 1, mean);
-  # Sigbar_k = apply( ( Sj_k - Sbar_k %*% matrix(1, nrow = 1, ncol = q) )^2, 1, sum) / (q-1);
-  # dmstat_k = abs(Sbar_k) / sqrt(Sigbar_k / q);
-  # # ---
-
-  # ---
-  # wald-version, eqn (16) in CRS
-  Sj = sqrt(n) * as.matrix(apply(matrix(D, nrow = b, ncol = q), 2, mean, na.rm=T));
-  Sbar = mean(Sj);
-  Sigbar = as.double(t(Sj)%*%Sj / q);
-  dmstat = q * ( (Sbar)^2 ) / Sigbar; #Wald-type test stat
-  # sign transformed of wald-stats
-  # note in d=1, there is no effect of sign change on Sigbar
-  M = 2^q;
-  G = as.matrix(expand.grid(Map(c, rep(-1,q), rep(1,q))));
-  Sbar_k   = G%*%Sj / q;
-  Sigbar_k = Sigbar; # note in d=1, there is no effect of sign change on Sigbar
-  dmstat_k = q*(Sbar_k^2) / Sigbar_k;
-  # ---
-
-  # ---
-  # decision-rule (1 if reject)
-  dmstat_k = sort(dmstat_k);
-  k = ceiling(M*(1-cl));
-  if (dmstat == dmstat_k[k]){
-
-    Mp = sum(dmstat_k > dmstat_k[k]);
-    M0 = sum(dmstat_k == dmstat_k[k])
-
-    a = (M*cl - Mp) / M0;
-    rej = (1 == rbinom(n=1, size=1, prob=a)); #randomization
-
-  } else {
-    rej = (dmstat > dmstat_k[k]);
-  }
-
-  # p-value
-  pval = mean(dmstat >= dmstat_k); #eqn (9) in CNR
-
-  #output
-  outls = list();
-  outls$rej  = rej;
-  outls$stat = dmstat;
-  outls$pval = pval;
-
-  return(outls);
-}
-
-
-# # eqn (17) in CRS
-# mbar   = mean(m);
-# s2bar  = sum((m-mbar)^2)/(q-1);
-# dmstat = mbar / sqrt(s2bar/q) ;
-#
-# # randomization
-# # rr = 1000;
-# p_dmstat = rep(NA,times=R);
-#
-# for (rrind in 1:R) {
-#   p_m = m*sample(c(-1,1), size=q, replace=TRUE);
-#   p_mbar   = mean(p_m);
-#   p_s2bar  = sum((p_m-p_mbar)^2)/(q-1);
-#   p_dmstat[rrind] = p_mbar / sqrt(p_s2bar/q);
-# }
-#
-# # pval = 2*mean(p_dmstat < -abs(dmstat));
-# # pval = mean( (p_dmstat < -abs(dmstat))&(p_dmstat > abs(dmstat)) ) ;
-# pval = mean( abs(p_dmstat) <= abs(dmstat) );
-#
-#
-# rej = pval < cl; #reject decision
