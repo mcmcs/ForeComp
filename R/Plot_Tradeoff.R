@@ -157,7 +157,7 @@ Plot_Tradeoff <- function(data,
     mat_dt[,irep] = dt_sim;
     mat_dtm[,irep] = mean(dt_sim);
     # autocovariance matrix
-    d.cov = stats::acf(dt_sim, lag.max = (Mmax), type="covariance", plot=FALSE, demean=TRUE)$acf[,,1]; #should I compute ACF under the null regardless? Then, this should be deman = FALSE
+    d.cov = stats::acf(dt_sim, lag.max = (Mmax), type="covariance", plot=FALSE, demean=TRUE)$acf[,,1]; 
     mat_acf[,irep] = d.cov;
   }
 
