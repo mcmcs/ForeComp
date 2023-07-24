@@ -1,6 +1,6 @@
 Package: ForeComp
 Type: Package
-Title: Testing for equal predictive ability
+Title: Tests for equal predictive ability of two forecasts
 Description: This package generates a size-power trade-off plot for a given Diebold-Mariano test.
 Version: 0.1.0
 Authors@R: c(
