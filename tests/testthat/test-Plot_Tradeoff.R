@@ -1,7 +1,7 @@
 
 # =====================================================
 # Test 1
-test_that("Size distortion cannot be smaller than 5% confidence level", {
+test_that("Size distortion cannot be smaller than -5%, which is the pre-specified confidence level for this package", {
   expect_true(min(Plot_Tradeoff(data = TBILL,
                                 f1   = "SPFfor_Step1",
                                 f2   = "NCfor_Step1",
