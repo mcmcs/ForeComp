@@ -157,7 +157,7 @@ Plot_Tradeoff <- function(data,
     mat_dt[,irep] = dt_sim;
     mat_dtm[,irep] = mean(dt_sim);
     # autocovariance matrix
-    d.cov = stats::acf(dt_sim, lag.max = (Mmax), type="covariance", plot=FALSE, demean=TRUE)$acf[,,1]; 
+    d.cov = stats::acf(dt_sim, lag.max = (Mmax), type="covariance", plot=FALSE, demean=TRUE)$acf[,,1];
     mat_acf[,irep] = d.cov;
   }
 
@@ -310,15 +310,17 @@ Plot_Tradeoff <- function(data,
   plotting_data["v_hypothesis_test_b"] <- ifelse(v_hypothesis_test_b == TRUE, "cross", "circle")
 
 
-  plot <- ggplot(plotting_data, aes(x = .data$b_size_distortion, y = .data$b_power_loss)) +
+  plot <- ggplot(plotting_data, aes(x = .data$b_size_distortion, y = .data$b_power_loss), group=v_hypothesis_test_b) +
     geom_path(linewidth = 1, linetype = "dashed") +
     geom_point(aes(shape = v_hypothesis_test_b), size = 4.5, color = "red", stroke = 1.5) +
-    scale_shape_identity() +
     labs(
       x = "Size Distortion",
       y = "Maximum Power Loss"
     ) +
-    theme_minimal()
+    theme_minimal() +
+    theme(legend.position = "bottom", legend.title = element_blank()) +
+    scale_shape_manual(values=c(16, 4), labels = c("H0 not rejected", "H0 rejected"))
+  plot
 
   # add m_set annotation
   if (no_m_label == FALSE){
