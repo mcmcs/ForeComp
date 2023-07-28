@@ -2,3 +2,4 @@
 ^\.Rproj\.user$
 ^data-raw$
 ^spf-data-raw$
+^cran-comments\.md$
