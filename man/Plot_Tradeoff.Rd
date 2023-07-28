@@ -16,7 +16,7 @@ Plot_Tradeoff(
 )
 }
 \arguments{
-\item{data}{Data frame}
+\item{data}{A data frame.}
 
 \item{f1}{Column containing forecaster 1's predictions. Should be a string.}
 

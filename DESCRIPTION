@@ -5,7 +5,7 @@ Description: This package generates a size-power trade-off plot for a given Dieb
 Version: 0.9.0
 Authors@R: c(
   person("Nathan", "Schor", role = c("aut")),
-  person("Minchul", "Shin", email = "visiblehand@gmail.com", role = c("aut", "cre", cph))
+  person("Minchul", "Shin", email = "visiblehand@gmail.com", role = c("aut", "cre", "cph"))
   )
 License: GPL-3
 Encoding: UTF-8
