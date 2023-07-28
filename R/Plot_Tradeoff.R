@@ -11,7 +11,7 @@
 #' @param n_sim The number of simulations used to generate the ARIMA model. Defaults to 1,000.
 #' @param m_set The truncation parameter. Defaults to c(1:10, seq( 11, floor(nrow(data)/2), 10)). For a standard long-run variance calculation (for example, using Bartlett kernel), it controls the number of terms used in estimating the autocovariance matrix. It should be a vector of integers with the values of M you would like to plot.
 #' @param no_m_label TRUE to plot without m labels. Defaults to FALSE.
-#' @return A list of length 2. The first element is a ggplot2 object of the size-power tradeoff. The second element is the underlying data used to construct the plot in element 1.
+#' @returns A list of length 2. The first element is a ggplot2 object of the size-power tradeoff. The second element is the underlying data used to construct the plot in element 1.
 #' @author Nathan Schor and Minchul Shin
 #' @importFrom forecast auto.arima
 #' @importFrom stats acf
