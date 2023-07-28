@@ -1,8 +1,18 @@
 
+pacman::p_load(
+  tidyverse
+)
+
+TBILL_imputed <- TBILL %>%
+  mutate(
+    across(-year_quarter, ~ coalesce(., 0))
+  )
+
 # =====================================================
 # Test 1
+
 test_that("Size distortion cannot be smaller than -5%, which is the pre-specified confidence level for this package", {
-  expect_true(min(Plot_Tradeoff(data = TBILL,
+  expect_true(min(Plot_Tradeoff(data = TBILL_imputed,
                                 f1   = "SPFfor_Step1",
                                 f2   = "NCfor_Step1",
                                 y    = "Realiz1")[[2]]$b_size_distortion) >= -0.05)
@@ -15,7 +25,7 @@ test_that("Check the dimension of the output.", {
 
   m_set = c(1,2,3,4,5);
 
-  output = Plot_Tradeoff(data = TBILL,
+  output = Plot_Tradeoff(data = TBILL_imputed,
                 f1   = "SPFfor_Step1",
                 f2   = "NCfor_Step1",
                 y    = "Realiz1",
@@ -29,7 +39,7 @@ test_that("Check the dimension of the output.", {
 # Test 3
 test_that("Check that the M labels are plotted by default.", {
 
-  output = Plot_Tradeoff(data = TBILL,
+  output = Plot_Tradeoff(data = TBILL_imputed,
                 f1   = "SPFfor_Step1",
                 f2   = "NCfor_Step1",
                 y    = "Realiz1"
@@ -42,7 +52,7 @@ test_that("Check that the M labels are plotted by default.", {
 # Test 4
 test_that("Check points have no labels when no_m_label = TRUE.", {
 
-  output = Plot_Tradeoff(data = TBILL,
+  output = Plot_Tradeoff(data = TBILL_imputed,
                 f1   = "SPFfor_Step1",
                 f2   = "NCfor_Step1",
                 y    = "Realiz1",
