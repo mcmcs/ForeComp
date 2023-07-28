@@ -3,7 +3,7 @@
 #'
 #' @description `Plot_Tradeoff` creates a plot to show sensitivity of statistical significance to the choice of bandwidth and how size distortion and maximum power loss vary.
 #'
-#' @param data Data frame
+#' @param data A data frame.
 #' @param f1 Column containing forecaster 1's predictions. Should be a string.
 #' @param f2 Column containing forecaster 2's predictions. Should be a string.
 #' @param y Column containing the realized value for the outcome variable. Should be a string.
