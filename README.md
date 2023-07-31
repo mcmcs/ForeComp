@@ -1,6 +1,6 @@
 # ForeComp
 
-This package visualizes the size distortion vs. maximum power loss tradeoff. 
+This package generates a size-power tradeoff plot for a given Diebold-Mariano test.
 
 ## Install latest version from GitHub
 ```R
