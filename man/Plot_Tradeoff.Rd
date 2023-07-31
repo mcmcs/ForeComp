@@ -2,7 +2,7 @@
 % Please edit documentation in R/Plot_Tradeoff.R
 \name{Plot_Tradeoff}
 \alias{Plot_Tradeoff}
-\title{Visualizes the size distortion maximum power loss tradeoff}
+\title{Visualizes the size distortion maximum power loss tradeoff from the Diebold-Mariano test for equal predictive accuracy}
 \usage{
 Plot_Tradeoff(
   data,
@@ -37,6 +37,8 @@ A list of length 2. The first element is a ggplot2 object of the size-power trad
 }
 \description{
 `Plot_Tradeoff` creates a plot to show sensitivity of statistical significance to the choice of bandwidth and how size distortion and maximum power loss vary.
+It is designed for the Diebold-Mariano test for equal predictive accuracy (Diebold and Mariano, 2002).
+For a size-power tradeoff plot, see Lazarus, Lewis, Stock, and Watson (2018) and Lazarus, Lewis, and Stock (2021).
 }
 \examples{
 
@@ -80,6 +82,13 @@ Plot_Tradeoff(
   data = tmpdata
 )
 
+}
+\references{
+Diebold, F. X. & Mariano, R. S. (2002), Comparing Predictive Accuracy, \emph{Journal of Business & Economic Statistics}, \bold{20}(1), 134-144.
+
+Lazarus, E., Lewis, D. J., Stock, J. H. & Watson, M. W. (2018), HAR Inference: Recommendations for Practice, \emph{Journal of Business & Economic Statistics}, \bold{36}(4), 541-559.
+
+Lazarus, E., Lewis, D. J. & Stock, J. H. (2021), The Size-Power Tradeoff in HAR Inference, \emph{Econometrica}, \bold{89}(5), 2497-2516.
 }
 \author{
 Nathan Schor and Minchul Shin
