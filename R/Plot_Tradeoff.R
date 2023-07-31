@@ -27,6 +27,26 @@
 #'
 #' @examples
 #'
+#' # replace NA with 0
+#'
+#' spf_step1 <- TBILL$SPFfor_Step1
+#' na_spf_step1 <-is.na(spf_step1)
+#' spf_step1_imputed <- ifelse(na_spf_step1, 0, spf_step1)
+#'
+#' TBILL$SPFfor_Step1 <- spf_step1_imputed
+#'
+#' nc_step1 <- TBILL$NCfor_Step1
+#' na_nc_step1 <-is.na(nc_step1)
+#' nc_step1_imputed <- ifelse(na_nc_step1, 0, nc_step1)
+#'
+#' TBILL$NCfor_Step1 <- nc_step1_imputed
+#'
+#' realiz_step1 <- TBILL$Realiz1
+#' na_realiz_step1 <-is.na(realiz_step1)
+#' realiz_step1_imputed <- ifelse(na_realiz_step1, 0, realiz_step1)
+#'
+#' TBILL$Realiz1 <- realiz_step1_imputed
+#'
 #' # A typical example
 #' set.seed(1234)
 #' output = Plot_Tradeoff(
