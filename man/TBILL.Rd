@@ -15,6 +15,6 @@ A data frame with 219 rows and 16 columns
 TBILL
 }
 \description{
-Error Statistics for the Survey of Professional Forecasters for Treasury Bill Rate (Three Month)
+Error Statistics for the Survey of Professional Forecasters for Treasury Bill Rate (Three Month). All NAs are replaced with 0.
 }
 \keyword{datasets}

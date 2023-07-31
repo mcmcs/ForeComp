@@ -15,6 +15,6 @@ A data frame with 219 rows and 16 columns
 UNEMP
 }
 \description{
-Error Statistics for the Survey of Professional Forecasters for Unemployment Rate
+Error Statistics for the Survey of Professional Forecasters for Unemployment Rate. All NAs are replaced with 0.
 }
 \keyword{datasets}

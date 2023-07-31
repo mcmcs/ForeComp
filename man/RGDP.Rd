@@ -15,6 +15,6 @@ A data frame with 219 rows and 16 columns
 RGDP
 }
 \description{
-Error Statistics for the Survey of Professional Forecasters for Real GNP/GDP
+Error Statistics for the Survey of Professional Forecasters for Real GNP/GDP. All NAs are replaced with 0.
 }
 \keyword{datasets}

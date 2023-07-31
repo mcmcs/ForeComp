@@ -1,7 +1,7 @@
 
 #' Civilian Unemployment Rate (UNEMP)
 #'
-#' Error Statistics for the Survey of Professional Forecasters for Unemployment Rate
+#' Error Statistics for the Survey of Professional Forecasters for Unemployment Rate. All NAs are replaced with 0.
 #'
 #' @format `UNEMP`
 #' A data frame with 219 rows and 16 columns
@@ -10,7 +10,7 @@
 
 #' 3-Month Treasury Bill Rate (TBILL)
 #'
-#' Error Statistics for the Survey of Professional Forecasters for Treasury Bill Rate (Three Month)
+#' Error Statistics for the Survey of Professional Forecasters for Treasury Bill Rate (Three Month). All NAs are replaced with 0.
 #'
 #' @format `TBILL`
 #' A data frame with 219 rows and 16 columns
@@ -19,7 +19,7 @@
 
 #' Real Gross National Product/Gross Domestic Product (RGDP)
 #'
-#' Error Statistics for the Survey of Professional Forecasters for Real GNP/GDP
+#' Error Statistics for the Survey of Professional Forecasters for Real GNP/GDP. All NAs are replaced with 0.
 #'
 #' @format `RDGP`
 #' A data frame with 219 rows and 16 columns
@@ -28,7 +28,7 @@
 
 #' Price Index for Gross National Product/Gross Domestic Product (PGDP)
 #'
-#' Error Statistics for the Survey of Professional Forecasters for GNP/GDP Price Index
+#' Error Statistics for the Survey of Professional Forecasters for GNP/GDP Price Index. All NAs are replaced with 0.
 #'
 #' @format `PGDP`
 #' A data frame with 219 rows and 16 columns

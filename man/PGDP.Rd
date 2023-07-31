@@ -15,6 +15,6 @@ A data frame with 219 rows and 16 columns
 PGDP
 }
 \description{
-Error Statistics for the Survey of Professional Forecasters for GNP/GDP Price Index
+Error Statistics for the Survey of Professional Forecasters for GNP/GDP Price Index. All NAs are replaced with 0.
 }
 \keyword{datasets}
