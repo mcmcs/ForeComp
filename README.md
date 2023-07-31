@@ -1,6 +1,6 @@
 # ForeComp
 
-This is a repo for ForeComp package. ForeComp ...
+This package generates a size-power tradeoff plot for a given Diebold-Mariano test.
 
 ## Install latest version from GitHub
 ```R
