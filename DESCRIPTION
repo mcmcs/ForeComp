@@ -1,6 +1,6 @@
 Package: ForeComp
 Type: Package
-Title: Size-Power Trade-off Visualization for Equal Predictive Ability of Two Forecasts
+Title: Size-Power Trade-Off Visualization for Equal Predictive Ability of Two Forecasts
 Description: Tools for visualizing and analyzing size and power properties of the test for equal predictive accuracy.
 Version: 0.9.0
 Authors@R: c(

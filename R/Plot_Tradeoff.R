@@ -37,21 +37,11 @@
 #'   data = TBILL,
 #'   f1   = "SPFfor_Step1",
 #'   f2   = "NCfor_Step1",
-#'   y    = "Realiz1"
+#'   y    = "Realiz1",
+#'   m_set = seq(from = 1, to = 70, by = 10)
 #' )
 #' output[[1]] # The first element is a ggplot2 object of the size-power tradeoff.
 #' output[[2]] # The second element is the underlying data used to construct the plot in element 1.
-#'
-#'
-#' # An example with user supplied M values (with a larger set of M values)
-#' set.seed(1234)
-#' Plot_Tradeoff(
-#'   data = TBILL,
-#'   f1 = "SPFfor_Step1",
-#'   f2 = "NCfor_Step1",
-#'   y  = "Realiz1",
-#'   m_set = c(1:10, seq(from = 11, to = nrow(TBILL) - 20, by = 10))
-#' )
 #'
 #' # An example with a user supplied loss function
 #' # To use the mean absolute error as a loss function rather than a quadratic loss function
@@ -61,14 +51,16 @@
 #'   f1   = "SPFfor_Step1",
 #'   f2   = "NCfor_Step1",
 #'   y    = "Realiz1",
-#'   loss_function = function(f,y){ abs(f-y) }
+#'   loss_function = function(f,y){ abs(f-y) },
+#'   m_set = seq(from = 1, to = 50, by = 10)
 #' )
 #'
 #' # An example without (f1, f2, y). The function will take the first three columns and use them
 #' set.seed(1234)
 #' tmpdata = TBILL[, c("SPFfor_Step1", "NCfor_Step1", "Realiz1")] # data with [f1, f2, y]
 #' Plot_Tradeoff(
-#'   data = tmpdata
+#'   data = tmpdata,
+#'   m_set = seq(from = 1, to = 50, by = 10)
 #' )
 #'
 
