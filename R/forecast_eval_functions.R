@@ -49,7 +49,7 @@ dm.test.r = function(d, h=1, cl = 0.05){
   rej = pval < cl; #(cl)-level testing, rej-decision
 
   if (d.var<0){
-    # print("dm.eq: negative variance ... ");
+    warning("dm.eq: negative variance ... ");
     rej = NA; #negative variance
   }
 
@@ -101,7 +101,7 @@ dm.test.r.m = function(d, h=1, cl = 0.05){
   rej = pval < cl; #(cl)-level testing, rej-decision
 
   if (d.var<0){
-    # print("dm.eq: negative variance ... ");
+    warning("dm.eq: negative variance ... ");
     rej = NA; #negative variance
   }
 
@@ -163,7 +163,7 @@ dm.test.bt = function(d, M = NA, Mopt = NA, cl = 0.05){
 
   if (d.var<0){
     # Note: in principle, it cannot be negative with prob. one.
-    # print("dm.eq.bt: negative variance ... ");
+    warning("dm.eq.bt: negative variance ... ");
     rej = NA; #negative variance
   }
 
@@ -227,7 +227,7 @@ dm.test.bt.fb = function(d, M = NA, Mopt = NA, cl = 0.05){
   } else if (cl == 0.10){
     crit = 1.6449 + 2.1859*b + 0.3142*b^2 -0.3427*b^3; #0.950 quantile
   } else {
-    print("dm.eq.bt.fb: cl has to be 0.05 or 0.10 ... function exited without testing");
+    warning("dm.eq.bt.fb: cl has to be 0.05 or 0.10 ... function exited without testing");
     outls = list();
     return(outls);
   }
@@ -237,7 +237,7 @@ dm.test.bt.fb = function(d, M = NA, Mopt = NA, cl = 0.05){
 
   if (d.var<0){
     # Note: in principle, it cannot be negative with prob. one.
-    # print("dm.eq.bt.fb: negative variance ... ");
+    warning("dm.eq.bt.fb: negative variance ... ");
     rej = NA; #negative variance
   }
 
@@ -302,7 +302,7 @@ dm.test.ewc.fb = function(d, B = NA, Bopt = NA, cl = 0.05){
 
   if (d.var<0){
     # Note: in principle, it cannot be negative with prob. one.
-    # print("dm.eq.ewc: negative variance ... ");
+    warning("dm.eq.ewc: negative variance ... ");
     rej = NA; #negative variance
   }
 
@@ -358,7 +358,7 @@ dm.test.wpe.fb = function(d, M = NA, Mopt = NA, cl = 0.05){
 
   if (gam2<0){
     # Note: in principle, it cannot be negative with prob. one.
-    # print("dm.eq.ewc: negative variance ... ");
+    warning("dm.eq.ewc: negative variance ... ");
     rej = NA; #negative variance
   }
 

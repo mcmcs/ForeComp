@@ -12,6 +12,7 @@
 #' @param loss_function The transformation applied to the forecast error. Defaults to squared error loss. The user supplied function should take two inputs and a scalar output, loss = loss_function(f, y). For example, quadratic loss function would be defined as \code{loss_function=function(f,y){(f-y)^2}}.
 #' @param n_sim The number of simulations used to generate the ARIMA model. Defaults to 1,000.
 #' @param m_set The truncation parameter. Defaults to c(1:10, seq( 11, floor(nrow(data)/2), 10)). For a standard long-run variance calculation (for example, using Bartlett kernel), it controls the number of terms used in estimating the autocovariance matrix. It should be a vector of integers with the values of M you would like to plot.
+#' @param verbose TRUE to print out the progress to the console. Defaults to TRUE.
 #' @param no_m_label TRUE to plot without m labels. Defaults to FALSE.
 #' @returns A list of length 2. The first element is a ggplot2 object of the size-power tradeoff. The second element is the underlying data used to construct the plot in element 1.
 #' @author Nathan Schor and Minchul Shin
@@ -81,6 +82,7 @@ Plot_Tradeoff <- function(data,
                           loss_function = NULL,
                           n_sim = 1000,
                           m_set = NULL,
+                          verbose = TRUE,
                           no_m_label = FALSE) {
 
   # Handling options
@@ -287,7 +289,9 @@ Plot_Tradeoff <- function(data,
     max_power_loss_b = max_power_loss_dm; #WCE-DM and WCE-B have the same power property
 
     # --- Collect results
-    print(paste0("M = ", iM, " / ", m_set_length));
+    if (verbose) {
+      print(paste0("M = ", iM, " / ", m_set_length));
+    }
     mat_size_distortion_dm[iM] = size_distortion_dm;
     mat_power_loss_dm[iM] = max_power_loss_dm;
 
