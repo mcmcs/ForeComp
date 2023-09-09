@@ -1,0 +1,8 @@
+citHeader("To cite ForeComp in publications use:")
+
+bibentry(
+  bibtype  = "Misc",
+  title    = "ForeComp package",
+  author   = "Nathan Schor and Minchul Shin",
+  year     = 2023
+)
