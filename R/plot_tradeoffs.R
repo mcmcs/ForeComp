@@ -157,14 +157,14 @@ ggplot(df_plotting, aes(x = size_distortion, y = max_power_loss, label = M)) +
 
 # Max Power Loss ----------------------------------------------------------
 
- %>%
-  ungroup() %>%
-  mutate(
-    d_max_power_loss = power_loss == max(power_loss)
-  ) %>%
-  print()
-
-max_power_loss_ <-
+#  %>%
+#   ungroup() %>%
+#   mutate(
+#     d_max_power_loss = power_loss == max(power_loss)
+#   ) %>%
+#   print()
+#
+# max_power_loss_ <-
 
 
 
