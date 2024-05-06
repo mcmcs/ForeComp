@@ -15,6 +15,9 @@ A data frame with 219 rows and 16 columns
 UNEMP
 }
 \description{
-Error Statistics for the Survey of Professional Forecasters for Unemployment Rate
+Error Statistics for the Survey of Professional Forecasters for Unemployment Rate. All NAs are replaced with 0 as in Coroneo and Iacone (2020).
+}
+\references{
+Coroneo, L., Iacone, F. (2020), Comparing Predictive Accuracy in Small Samples Using Fixed-Smoothing Asymptotics, \emph{Journal of Applied Econometrics}, \bold{35}(4), 391-409.
 }
 \keyword{datasets}

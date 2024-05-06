@@ -2,7 +2,7 @@
 % Please edit documentation in R/Plot_Tradeoff.R
 \name{Plot_Tradeoff}
 \alias{Plot_Tradeoff}
-\title{Visualizes the size distortion maximum power loss tradeoff}
+\title{Visualizes the size distortion maximum power loss tradeoff from the Diebold-Mariano test for equal predictive accuracy}
 \usage{
 Plot_Tradeoff(
   data,
@@ -12,11 +12,12 @@ Plot_Tradeoff(
   loss_function = NULL,
   n_sim = 1000,
   m_set = NULL,
+  verbose = TRUE,
   no_m_label = FALSE
 )
 }
 \arguments{
-\item{data}{Data frame}
+\item{data}{A data frame.}
 
 \item{f1}{Column containing forecaster 1's predictions. Should be a string.}
 
@@ -30,6 +31,8 @@ Plot_Tradeoff(
 
 \item{m_set}{The truncation parameter. Defaults to c(1:10, seq( 11, floor(nrow(data)/2), 10)). For a standard long-run variance calculation (for example, using Bartlett kernel), it controls the number of terms used in estimating the autocovariance matrix. It should be a vector of integers with the values of M you would like to plot.}
 
+\item{verbose}{TRUE to print out the progress to the console. Defaults to TRUE.}
+
 \item{no_m_label}{TRUE to plot without m labels. Defaults to FALSE.}
 }
 \value{
@@ -37,6 +40,8 @@ A list of length 2. The first element is a ggplot2 object of the size-power trad
 }
 \description{
 `Plot_Tradeoff` creates a plot to show sensitivity of statistical significance to the choice of bandwidth and how size distortion and maximum power loss vary.
+It is designed for the Diebold-Mariano test for equal predictive accuracy (Diebold and Mariano, 2002).
+For a size-power tradeoff plot, see Lazarus, Lewis, Stock, and Watson (2018) and Lazarus, Lewis, and Stock (2021).
 }
 \examples{
 
@@ -46,21 +51,11 @@ output = Plot_Tradeoff(
   data = TBILL,
   f1   = "SPFfor_Step1",
   f2   = "NCfor_Step1",
-  y    = "Realiz1"
+  y    = "Realiz1",
+  m_set = seq(from = 1, to = 70, by = 10)
 )
 output[[1]] # The first element is a ggplot2 object of the size-power tradeoff.
 output[[2]] # The second element is the underlying data used to construct the plot in element 1.
-
-
-# An example with user supplied M values (with a larger set of M values)
-set.seed(1234)
-Plot_Tradeoff(
-  data = TBILL,
-  f1 = "SPFfor_Step1",
-  f2 = "NCfor_Step1",
-  y  = "Realiz1",
-  m_set = c(1:10, seq(from = 11, to = nrow(TBILL) - 20, by = 10))
-)
 
 # An example with a user supplied loss function
 # To use the mean absolute error as a loss function rather than a quadratic loss function
@@ -70,16 +65,25 @@ output = Plot_Tradeoff(
   f1   = "SPFfor_Step1",
   f2   = "NCfor_Step1",
   y    = "Realiz1",
-  loss_function = function(f,y){ abs(f-y) }
+  loss_function = function(f,y){ abs(f-y) },
+  m_set = seq(from = 1, to = 50, by = 10)
 )
 
 # An example without (f1, f2, y). The function will take the first three columns and use them
 set.seed(1234)
 tmpdata = TBILL[, c("SPFfor_Step1", "NCfor_Step1", "Realiz1")] # data with [f1, f2, y]
 Plot_Tradeoff(
-  data = tmpdata
+  data = tmpdata,
+  m_set = seq(from = 1, to = 50, by = 10)
 )
 
+}
+\references{
+Diebold, F. X. & Mariano, R. S. (2002), Comparing Predictive Accuracy, \emph{Journal of Business & Economic Statistics}, \bold{20}(1), 134-144.
+
+Lazarus, E., Lewis, D. J., Stock, J. H. & Watson, M. W. (2018), HAR Inference: Recommendations for Practice, \emph{Journal of Business & Economic Statistics}, \bold{36}(4), 541-559.
+
+Lazarus, E., Lewis, D. J. & Stock, J. H. (2021), The Size-Power Tradeoff in HAR Inference, \emph{Econometrica}, \bold{89}(5), 2497-2516.
 }
 \author{
 Nathan Schor and Minchul Shin
