@@ -1,7 +1,0 @@
-*.csv
-*.Rproj
-.Rproj.user
-.Rbuildignore
-.Rhistory
-DESCRIPTION
-NAMESPACE
