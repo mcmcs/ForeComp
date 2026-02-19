@@ -1,17 +1,42 @@
 # ForeComp
 
-This repository contains the **ForeComp** R package and replication scripts for a forecasting comparison study. The package implements Diebold-Mariano and related tests for equal predictive accuracy. Datasets and scripts included here reproduce tradeoff plots and robustness tables used in the accompanying paper.
+This repository contains the **ForeComp** R package for forecasting comparison and equal predictive accuracy testing. The package implements Diebold-Mariano and related procedures, along with tools for size-power tradeoff analysis.
 
 ## Contents
 
 - `R/` package source code implementing forecast evaluation functions
-- `data/` packaged datasets and `data-raw/` generation inputs/scripts
-- Replication scripts under `applications/` (e.g., `applications/application02/ci_replication_minchul.R`, `applications/application03/example_plot_tradeoff.R`)
-- Legacy development scripts under `archive/` (kept for record; not used in current dev)
+- `data/` packaged datasets used by the package
+- `man/` function documentation (`.Rd` files)
+- `tests/testthat/` automated tests
+- `NEWS.md` release notes and version history
 
-The code and data allow users to replicate the empirical results and explore the performance of different forecasting methods.
+The package code and datasets support forecasting-method comparison and robustness analysis for equal predictive accuracy testing.
 
-## Bandwidth Options
+## Installation
+
+`ForeComp` requires `R (>= 3.5.0)`.
+
+Install the stable release from CRAN:
+
+```r
+install.packages("ForeComp")
+```
+
+Install the development version from GitHub:
+
+```r
+remotes::install_github("mcmcs/ForeComp")
+```
+
+## Main functions
+
+`Plot_Tradeoff(data, f1, f2, y, ...)`
+
+- Computes loss differentials between two forecast series and evaluates how the truncation choice (`M`) affects size distortion and maximum power loss.
+- Fits an ARIMA approximation to the loss differential process and uses simulation (`n_sim`) to construct size-power tradeoff results across `m_set`.
+- Returns a list where the first element is a `ggplot2` tradeoff figure and the second element is the underlying computed table.
+
+For direct equal-predictive-accuracy testing with specific bandwidth rules:
 
 `ForeComp` supports both fixed-smoothing defaults and baseline alternatives for Bartlett-kernel DM tests:
 
@@ -30,3 +55,7 @@ where `T = length(d)`.
 For EWC fixed-smoothing:
 
 - `dm.test.ewc.fb(d, B = NA, Bopt = 1)` uses `B = floor(0.4 * T^(2/3))` with a lower bound of 1.
+
+## Introductory Paper
+
+Coming soon!
