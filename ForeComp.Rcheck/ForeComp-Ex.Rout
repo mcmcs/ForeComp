@@ -1,0 +1,144 @@
+
+R version 4.5.2 (2025-10-31) -- "[Not] Part in a Rumble"
+Copyright (C) 2025 The R Foundation for Statistical Computing
+Platform: aarch64-apple-darwin20
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> pkgname <- "ForeComp"
+> source(file.path(R.home("share"), "R", "examples-header.R"))
+> options(warn = 1)
+> base::assign(".ExTimings", "ForeComp-Ex.timings", pos = 'CheckExEnv')
+> base::cat("name\tuser\tsystem\telapsed\n", file=base::get(".ExTimings", pos = 'CheckExEnv'))
+> base::assign(".format_ptime",
++ function(x) {
++   if(!is.na(x[4L])) x[1L] <- x[1L] + x[4L]
++   if(!is.na(x[5L])) x[2L] <- x[2L] + x[5L]
++   options(OutDec = '.')
++   format(x[1L:3L], digits = 7L)
++ },
++ pos = 'CheckExEnv')
+> 
+> ### * </HEADER>
+> library('ForeComp')
+> 
+> base::assign(".oldSearch", base::search(), pos = 'CheckExEnv')
+> base::assign(".old_wd", base::getwd(), pos = 'CheckExEnv')
+> cleanEx()
+> nameEx("Plot_Tradeoff")
+> ### * Plot_Tradeoff
+> 
+> flush(stderr()); flush(stdout())
+> 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+> ### Name: Plot_Tradeoff
+> ### Title: Visualizes the size distortion maximum power loss tradeoff from
+> ###   the Diebold-Mariano test for equal predictive accuracy
+> ### Aliases: Plot_Tradeoff
+> 
+> ### ** Examples
+> 
+> ## No test: 
+> # A typical example
+> set.seed(1234)
+> output = Plot_Tradeoff(
++   data = TBILL,
++   f1   = "SPFfor_Step1",
++   f2   = "NCfor_Step1",
++   y    = "Realiz1",
++   m_set = seq(from = 1, to = 70, by = 10)
++ )
+[1] "M = 1 / 8"
+[1] "M = 2 / 8"
+[1] "M = 3 / 8"
+[1] "M = 4 / 8"
+[1] "M = 5 / 8"
+[1] "M = 6 / 8"
+[1] "M = 7 / 8"
+[1] "M = 8 / 8"
+> output[[1]] # The first element is a ggplot2 object of the size-power tradeoff.
+> output[[2]] # The second element is the underlying data used to construct the plot in element 1.
+   M b_size_distortion b_power_loss v_hypothesis_test_b v_test_statistic_b
+1  1             0.218 1.040834e-16               cross          -3.598274
+2 11             0.042 1.040834e-16               cross          -2.539606
+3 20             0.013 1.040834e-16               cross          -2.443839
+4 21             0.014 1.040834e-16               cross          -2.443991
+5 31             0.007 1.522424e-02               cross          -2.480282
+6 41             0.002 3.224787e-02               cross          -2.546006
+7 51            -0.005 4.060104e-02               cross          -2.656340
+8 61            -0.005 5.840104e-02               cross          -2.806402
+  v_hypothesis_test_dm v_test_statistic_dm
+1                 TRUE           -3.598274
+2                 TRUE           -2.539606
+3                 TRUE           -2.443839
+4                 TRUE           -2.443991
+5                 TRUE           -2.480282
+6                 TRUE           -2.546006
+7                 TRUE           -2.656340
+8                 TRUE           -2.806402
+> 
+> # An example with a user supplied loss function
+> # To use the mean absolute error as a loss function rather than a quadratic loss function
+> set.seed(1234)
+> output = Plot_Tradeoff(
++   data = TBILL,
++   f1   = "SPFfor_Step1",
++   f2   = "NCfor_Step1",
++   y    = "Realiz1",
++   loss_function = function(f,y){ abs(f-y) },
++   m_set = seq(from = 1, to = 50, by = 10)
++ )
+[1] "M = 1 / 6"
+[1] "M = 2 / 6"
+[1] "M = 3 / 6"
+[1] "M = 4 / 6"
+[1] "M = 5 / 6"
+[1] "M = 6 / 6"
+> 
+> # An example without (f1, f2, y). The function will take the first three columns and use them
+> set.seed(1234)
+> tmpdata = TBILL[, c("SPFfor_Step1", "NCfor_Step1", "Realiz1")] # data with [f1, f2, y]
+> Plot_Tradeoff(
++   data = tmpdata,
++   m_set = seq(from = 1, to = 50, by = 10)
++ )
+[1] "M = 1 / 6"
+[1] "M = 2 / 6"
+[1] "M = 3 / 6"
+[1] "M = 4 / 6"
+[1] "M = 5 / 6"
+[1] "M = 6 / 6"
+> ## End(No test)
+> 
+> 
+> 
+> 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("Plot_Tradeoff", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+> ### * <FOOTER>
+> ###
+> cleanEx()
+> options(digits = 7L)
+> base::cat("Time elapsed: ", proc.time() - base::get("ptime", pos = 'CheckExEnv'),"\n")
+Time elapsed:  2.221 0.049 2.301 0 0 
+> grDevices::dev.off()
+null device 
+          1 
+> ###
+> ### Local variables: ***
+> ### mode: outline-minor ***
+> ### outline-regexp: "\\(> \\)?### [*]+" ***
+> ### End: ***
+> quit('no')
