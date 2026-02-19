@@ -1,0 +1,9 @@
+*.csv
+*.Rproj
+.Rproj.user
+.Rbuildignore
+.Rhistory
+DESCRIPTION
+NAMESPACE
+.Rlib
+ForeComp.Rcheck
