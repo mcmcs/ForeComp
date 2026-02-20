@@ -12,18 +12,19 @@ Authors@R: c(
            role = c("aut", "cre", "cph"))
     )
 Description: Offers tools for visualizing and analyzing size and power properties
-    of tests for equal predictive accuracy, including the Diebold-Mariano test
-    based on heteroskedasticity and autocorrelation-robust (HAR) inference. HAR
-    inference involves nonparametric estimation of the long-run variance, and a
-    key tuning parameter (the truncation parameter) trades off size and power.
-    Lazarus, Lewis, and Stock (2021) <doi:10.3982/ECTA15404> theoretically
-    characterize the size-power frontier for the Gaussian multivariate location
-    model. ForeComp computes and visualizes the finite-sample size-power
-    frontier of the Diebold-Mariano test based on fixed-b asymptotics together
-    with the Bartlett kernel. To compute finite-sample size and power, it fits
-    a best approximating ARMA process to the input data and reports how the
-    truncation parameter performs and how robust testing outcomes are to its
-    choice.
+    of tests for equal predictive accuracy, including Diebold-Mariano and
+    related procedures. Provides multiple Diebold-Mariano test implementations
+    based on fixed-smoothing (fixed-b and fixed-m) approaches, alongside
+    conventional large-sample approximations. HAR inference involves
+    nonparametric estimation of the long-run variance, and a key tuning
+    parameter (the truncation parameter) trades off size and power. Lazarus,
+    Lewis, and Stock (2021) <doi:10.3982/ECTA15404> theoretically characterize
+    the size-power frontier for the Gaussian multivariate location model.
+    ForeComp computes and visualizes the finite-sample size-power frontier of
+    the Diebold-Mariano test based on fixed-b asymptotics together with the
+    Bartlett kernel. To compute finite-sample size and power, it fits a best
+    approximating ARMA process to the input data and reports how the truncation
+    parameter performs and how robust testing outcomes are to its choice.
 License: GPL (>= 3)
 Encoding: UTF-8
 URL: https://github.com/mcmcs/ForeComp

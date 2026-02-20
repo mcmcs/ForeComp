@@ -1,6 +1,6 @@
 # ForeComp
 
-This repository contains the **ForeComp** R package for forecasting comparison and equal predictive accuracy testing. The package implements Diebold-Mariano and related procedures, along with tools for size-power tradeoff analysis.
+This repository contains the **ForeComp** R package for forecasting comparison and equal predictive accuracy testing. The package implements Diebold-Mariano and related procedures, including fixed-smoothing (fixed-b and fixed-m) variants, along with tools for size-power tradeoff analysis.
 
 ## Contents
 
