@@ -14,13 +14,16 @@ Authors@R: c(
 Description: Offers tools for visualizing and analyzing size and power properties
     of tests for equal predictive accuracy, including Diebold-Mariano and
     related procedures. Provides multiple Diebold-Mariano test implementations
-    based on fixed-smoothing (fixed-b and fixed-m) approaches, alongside
-    conventional large-sample approximations. HAR inference involves
+    based on fixed-smoothing approaches, including fixed-b methods such as
+    Kiefer and Vogelsang (2005) <doi:10.1017/S0266466605050565>, and
+    applications to tests for equal predictive accuracy as in Coroneo and
+    Iacone (2020) <doi:10.1002/jae.2756>, alongside conventional large-sample
+    approximations. HAR inference involves
     nonparametric estimation of the long-run variance, and a key tuning
     parameter (the truncation parameter) trades off size and power. Lazarus,
     Lewis, and Stock (2021) <doi:10.3982/ECTA15404> theoretically characterize
     the size-power frontier for the Gaussian multivariate location model.
-    ForeComp computes and visualizes the finite-sample size-power frontier of
+    'ForeComp' computes and visualizes the finite-sample size-power frontier of
     the Diebold-Mariano test based on fixed-b asymptotics together with the
     Bartlett kernel. To compute finite-sample size and power, it fits a best
     approximating ARMA process to the input data and reports how the truncation
